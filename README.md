@@ -57,7 +57,7 @@ In this case, the label represented by 42 in the libsvm file is "life sciences" 
 On Hadoop, the three data sources must have the same file name and must use the following suffixes
 e.g., `mydata`, `mydata-columnMap` and `mydata-targetMap`
   
-When opened from a local file system, the data will also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
+When opened from a local file system, the data must also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
 
 
 
