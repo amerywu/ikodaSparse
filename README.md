@@ -2,10 +2,27 @@
 ikodaSparse maintains sparse data along with its meaningful text values. As an example, this allows natural language word frequency data to be processed in libsvm format while maintaining the words as column heads and categories as text values.
 
 Sparse data is loaded from three files. 
-A libsvm file with .libsvm file suffix (e.g., mydata.libsvm)
+A libsvm file:
 
-42.0 12:1.0 78:2.0 258:1.0 275:1.0 302:1.0 348:1.0 362:1.0 492:1.0 494:1.0 642:1.0 1325:1.0 1583:1.0 2376:1.0 2501:1.0 
-
-42.0 151:1.0 415:1.0 907:1.0 9626:1.0
-
+42.0 12:1.0 78:2.0 258:1.0 275:1.0 302:1.0 348:1.0 362:1.0 492:1.0 494:1.0 642:1.0 1325:1.0 1583:1.0 2376:1.0 2501:1.0<br> 
+42.0 151:1.0 415:1.0 907:1.0 9626:1.0<br>
 4.0 48:1.0 211:1.0 881:1.0 6957:1.0 12667:1.0 15066:1.0
+
+A columnMap:
+
+ColumnHeadTuple(1,v_create)<br>
+ColumnHeadTuple(2,scenario)<br>
+ColumnHeadTuple(3,v_stimulate)<br>
+ColumnHeadTuple(4,v_extract)<br>
+
+A label/target/category map:
+(life sciences,42.0)<br>
+(nursing,4.0)<br>
+(business,16.0)<br>
+
+The three data sources must have the same file name and must use the following suffixes
+e.g., <mydata>, <mydata-columnMap> and <mydata.targetMap> 
+  
+
+
+
