@@ -1,7 +1,9 @@
 # ikodaSparse
 ikodaSparse maintains sparse data along with its meaningful text values. As an example, this allows natural language word frequency data to be processed in libsvm format while maintaining the words as column heads and categories as text values.
+
 ikodaSparse is a Scala tool designed to run as part of a data pipeline on Spark.
 The core of the tool is an `RDD[org.apache.spark.ml.feature.LabeledPoint]` with a mapping for text names to each column and label/target.
+
 ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark.mllib.regression.LabeledPoint]`if required
 
 The main function of ikodaSparse is to manipulate large sparse data. ikodaSparse can:
