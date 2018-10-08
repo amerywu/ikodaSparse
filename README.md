@@ -1,22 +1,31 @@
 # ikodaSparse
-ikodaSparse maintains sparse data along with its meaningful text values. As an example, this allows natural language word frequency data to be processed in libsvm format while maintaining the words as column heads and categories as text values.
+ikodaSparse maintains sparse data along with its meaningful text values. 
+
+Libsvm format data (and the analogous LabeledPoint Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. However, ikodaSparse maintains the text values for column heads and text category names for the labels.  
+
+As an example, this allows natural language word frequency data to be processed in libsvm format without losing the meaningful information required when reporting and providing data visualization of the data analysis.
 
 ikodaSparse is a Scala tool designed to run as part of a data pipeline on Spark.
-The core of the tool is an `RDD[org.apache.spark.ml.feature.LabeledPoint]` with a mapping for text names to each column and label/target.
+
+The core of the tool is an `RDD[org.apache.spark.ml.feature.LabeledPoint]` with a mapping for text names to each column and also  to each label/target.
 
 ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark.mllib.regression.LabeledPoint]`if required
 
 The main function of ikodaSparse is to manipulate large sparse data. ikodaSparse can:
 1. Remove columns
-2. Reorder columns
-3. Remove rows by label/target
-4. Perform mathematical operations both row wise and column wise
-5. Merge labels/targets.
-6. Merge data schemas. (i.e., convert one data set to match the column and target numbers of another).
-7. Dichotomize labels/targets.(i.e., It is either of target A or OTHER)
-8. Identify and remove duplicate rows
-9. Return rows containing a particular column.
-10. Add columns.
+1. Reorder columns
+1. Add columns
+1. Remove rows by label/target
+1. Perform mathematical operations, both row wise and column wise
+1. Provide data directly to scala ML functions
+1. Merge labels/targets.
+1. Merge data schemas. (i.e., convert one data set to match the column and target numbers of another).
+1. Merge sparse data from two sources
+1. Dichotomize labels/targets.(i.e., It is either of target A or OTHER)
+1. Identify and remove duplicate rows
+1. Return rows containing a particular column.
+1. Load and save data on a local file system
+1. Load and save data on Hadoop.
 
 
 
@@ -48,7 +57,7 @@ In this case, the label represented by 42 in the libsvm file is "life sciences" 
 On Hadoop, the three data sources must have the same file name and must use the following suffixes
 e.g., `mydata`, `mydata-columnMap` and `mydata-targetMap`
   
-When opened from a local file system, the data will also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
+When opened from a local file system, the data must also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
 
 
 
