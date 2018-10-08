@@ -1,5 +1,16 @@
 # ikodaSparse
 ikodaSparse maintains sparse data along with its meaningful text values. As an example, this allows natural language word frequency data to be processed in libsvm format while maintaining the words as column heads and categories as text values.
+ikodaSparse is a Scala tool designed to run as part of a data pipeline on Spark.
+
+The main function of ikodaSparse is to manipulate large sparse data. It can
+1. Remove columns
+2. Reorder columns
+3. Remove rows by label/target
+4. Perform mathematical operations both row wise and column wise
+5. Merge labels/targets.
+6. Merge data schemas. (i.e., convert one data set to match the column and target numbers of another).
+
+
 
 Sparse data is loaded from three files. 
 
@@ -19,15 +30,17 @@ ColumnHeadTuple(4,v_extract)<br>
 In this case, the first column/feature, represented by 1 in the libsvm file, is the verb "create"
 
 *A label/target/category map:*
+
 (life sciences,42.0)<br>
 (nursing,4.0)<br>
 (business,16.0)<br>
 
 In this case, the label represented by 42 in the libsvm file is "life sciences" (Perhaps the data here is natural language discussions of professions or college majors)
 
-The three data sources must have the same file name and must use the following suffixes
+On Hadoop, the three data sources must have the same file name and must use the following suffixes
 e.g., `mydata`, `mydata-columnMap` and `mydata-targetMap`
   
+When opened from a local file system, the data will also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
 
 
 
