@@ -13,17 +13,20 @@ ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark
 
 The main function of ikodaSparse is to manipulate large sparse data. ikodaSparse can:
 1. Remove columns
-2. Reorder columns
-3. Remove rows by label/target
-4. Perform mathematical operations both row wise and column wise
-5. Merge labels/targets.
-6. Merge data schemas. (i.e., convert one data set to match the column and target numbers of another).
-7. Dichotomize labels/targets.(i.e., It is either of target A or OTHER)
-8. Identify and remove duplicate rows
-9. Return rows containing a particular column.
-10. Add columns.
-11. Load and save data on a local file system
-12. Load and save data on Hadoop.
+1. Reorder columns
+1. Add columns
+1. Remove rows by label/target
+1. Perform mathematical operations, both row wise and column wise
+1. Provide data directly to scala ML functions
+1. Merge labels/targets.
+1. Merge data schemas. (i.e., convert one data set to match the column and target numbers of another).
+1. Merge sparse data from two sources
+1. Dichotomize labels/targets.(i.e., It is either of target A or OTHER)
+1. Identify and remove duplicate rows
+1. Return rows containing a particular column.
+1. Load and save data on a local file system
+1. Load and save data on Hadoop.
+
 
 
 Sparse data is loaded from three files. 
