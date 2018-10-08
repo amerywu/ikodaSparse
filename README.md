@@ -13,7 +13,7 @@ ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark
 
 The main function of ikodaSparse is to manipulate large sparse data. 
 
-# ikodaSparse can:
+### ikodaSparse can:
 1. Remove columns
 1. Reorder columns
 1. Add columns
