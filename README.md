@@ -11,7 +11,9 @@ The core of the tool is an `RDD[org.apache.spark.ml.feature.LabeledPoint]` with 
 
 ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark.mllib.regression.LabeledPoint]`if required
 
-The main function of ikodaSparse is to manipulate large sparse data. ikodaSparse can:
+The main function of ikodaSparse is to manipulate large sparse data. 
+
+### ikodaSparse can:
 1. Remove columns
 1. Reorder columns
 1. Add columns
