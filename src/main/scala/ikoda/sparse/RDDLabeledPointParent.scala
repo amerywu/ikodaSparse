@@ -252,7 +252,6 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
       val mlLpArray:Array[org.apache.spark.mllib.regression.LabeledPoint]=labeledPointRdd.collect().map
       {
         lp =>
-          logger.debug("size: "+lp.features.size+" ["+lp.features.toSparse.indices.mkString(",")+"]")
           val mlVec = mllib.linalg.Vectors.fromML(lp.features)
           new org.apache.spark.mllib.regression.LabeledPoint(lp.label,mlVec)
       }

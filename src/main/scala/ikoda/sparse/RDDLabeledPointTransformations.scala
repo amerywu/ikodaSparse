@@ -40,6 +40,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
         case e:Exception => throw new IKodaMLException(e.getMessage,e)
       }
   }
+
   private [sparse] def internalSortColumns(lp: LabeledPoint):Option[LabeledPoint] = {
     try {
       val aligned: Map[Int, Double] =
@@ -48,10 +49,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
             colidx -> lp.features.toSparse.values(zidx)
         }.toMap
 
-
       val alignedSorted = scala.collection.immutable.TreeMap(aligned.toArray: _*)
-
-      //logger.debug("\n\n\nalignColumnIndicesForLabeledPoint 2\n" + alignedSorted.mkString("\n#"))
 
       alignedSorted.size == lp.features.toSparse.values.length match {
         case true => Some(newLabeledPoint(lp.label,alignedSorted.keySet.toArray, alignedSorted.values.toArray))
@@ -59,7 +57,6 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
           logger.warn("\n\nWARN: Column <-> Value Mismatch\nColumns: " + alignedSorted.size + "\nValues: " + lp.features.toSparse.values.length)
           None
       }
-
     }
     catch {
       case e: Exception => throw IKodaMLException(e.getMessage, e)
@@ -68,7 +65,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
   def newLabeledPoint(label:Double, indices:Array[Int], values:Array[Double]): LabeledPoint =
   {
-    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(getColumnCount+1,indices,values))
+    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(getColumnMaxIndex+1,indices,values))
   }
 
   def newLabeledPoint(label:Double,  featureCount:Int,indices:Array[Int], values:Array[Double]): LabeledPoint =
@@ -76,9 +73,8 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
     new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(featureCount,indices,values))
   }
 
-   def transformRDDToDataFrame(): DataFrame =
+  def transformRDDToDataFrame(): DataFrame =
   {
-
     val sqlContext = spark.sqlContext
     import sqlContext.implicits._
     lpData().map(lp=>(lp.label,lp.features))toDF("label", "features")
