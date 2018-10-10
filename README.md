@@ -41,18 +41,18 @@ Sparse data is loaded from three files.
 
 *A columnMap:*
 
-ColumnHeadTuple(1,v_create)<br>
-ColumnHeadTuple(2,scenario)<br>
-ColumnHeadTuple(3,v_stimulate)<br>
-ColumnHeadTuple(4,v_extract)<br>
+1,v_create<br>
+2,scenario<br>
+3,v_stimulate<br>
+4,v_extract<br>
 
 In this case, the first column/feature, represented by 1 in the libsvm file, is the verb "create"
 
 *A label/target/category map:*
 
-(life sciences,42.0)<br>
-(nursing,4.0)<br>
-(business,16.0)<br>
+life sciences,42.0<br>
+nursing,4.0<br>
+business,16.0<br>
 
 In this case, the label represented by 42 in the libsvm file is "life sciences" (Perhaps the data here is natural language discussions of professions or college majors)
 
