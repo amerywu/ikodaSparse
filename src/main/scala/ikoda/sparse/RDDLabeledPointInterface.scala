@@ -38,7 +38,16 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
         columnMap.toSeq: _*
       )
       mutableColumnMap.put(colIndex, newCol)
-      val data=transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap, allowRowCountChange = true)
+
+      val maxCol=newColumnMap.keySet.max+1
+      logger.debug(getColumnHeads().mkString("\n"))
+      logger.debug(newColumnMap.mkString("\n"))
+
+
+
+
+
+      val data=transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap, allowRowCountChange = true, maxColumnIdxo = Some(maxCol+2))
       new RDDLabeledPoint(new LpData(Some(data),Some(newColumnMap),Some(copyTargetMap),Some(ilp.name)))
 
     }

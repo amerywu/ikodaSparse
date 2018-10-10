@@ -86,12 +86,24 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
                                           spark: SparkSession,
                                           columnsMap: Map[Int, Seq[CellTuple]],
                                           oldNewColumnIndexMap: Map[Int, Int] = HashMap[Int, Int]().toMap,
-                                          allowRowCountChange: Boolean
+                                          allowRowCountChange: Boolean,
+                                          maxColumnIdxo:Option[Int] = None
                                         ): RDD[(LabeledPoint,Int,String)] =
   {
 
     try
     {
+
+      logger.debug("max column o"+maxColumnIdxo)
+      val maxColumnIdx = maxColumnIdxo.isDefined match
+      {
+        case true =>
+          logger.debug("max column set to "+maxColumnIdxo.get)
+          maxColumnIdxo.get
+
+        case false => getColumnMaxIndex
+      }
+
       val newRowsMap: mutable.HashMap[UUID, mutable.HashMap[Int, CellTuple]] = transformColumnMapToRowMap(
         columnsMap, oldNewColumnIndexMap, allowRowCountChange
       )
@@ -105,15 +117,12 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
       val dataArray: Array[(LabeledPoint, Int, String)] = newRowsMap.map
       {
         row =>
-
-
           val indices: ListBuffer[Int] = ListBuffer()
           val label: Double = row._2.toList.head._2.label
           val uuid: UUID = row._2.toList.head._2.rowId
           val values: ListBuffer[Double] = ListBuffer()
           val rowValues: mutable.HashMap[Int, CellTuple] = row._2
           val sortedMap: immutable.TreeMap[Int, CellTuple] = immutable.TreeMap(rowValues.toSeq: _*)
-
 
           sortedMap.toArray.foreach
           {
@@ -137,7 +146,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
           logger.debug(indices.toArray.mkString("\ni: "))
           logger.debug(values.toArray.mkString("\nv: "))
-          val lp: LabeledPoint = newLabeledPoint(label,  indices.toArray, values.toArray)
+          val lp: LabeledPoint = newLabeledPoint(label, maxColumnIdx, indices.toArray, values.toArray)
 
 
           (lp, lp.hashCode(), uuid.toString)

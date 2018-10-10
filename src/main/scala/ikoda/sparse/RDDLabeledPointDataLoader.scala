@@ -74,7 +74,7 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
 
 
   @throws(classOf[Exception])
-  def loadLibSvm1(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
+  def loadLibSvm(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
   {
     try
     {
@@ -122,7 +122,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmFromHelper1(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
   {
     try
     {
@@ -213,7 +213,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmPJ1(inpth: String, partitions:Int=defaultPartitionSize, validateColumns:Boolean=true): RDDLabeledPoint =
+  def loadLibSvmLocal(inpth: String, partitions:Int=defaultPartitionSize, validateColumns:Boolean=true): RDDLabeledPoint =
   {
     try
     {
@@ -260,7 +260,7 @@ logger.info(sparseout.info())
   }
 
   @throws(classOf[Exception])
-  def loadSchemaPJ1( inpth: String): RDDLabeledPoint =
+  def loadSchemaLocal(inpth: String): RDDLabeledPoint =
   {
     try
     {

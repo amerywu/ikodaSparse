@@ -202,7 +202,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
     try
     {
       val newColumnHeadMap=copyColumnMap
-      val newColIndex: Int = getColumnCount
+      val newColIndex: Int = getColumnMaxIndex+1
       val cht: ColumnHeadTuple = ColumnHeadTuple(newColIndex, colName)
       if(newColumnHeadMap.get(newColIndex).isEmpty)
       {
@@ -872,7 +872,8 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
           }"
         )
       }
-      val data = transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap,  allowRowCountChange = true)
+      val maxColIdx=tempColumnHeadMap.keySet.max+1
+      val data = transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap,  allowRowCountChange = true, maxColumnIdxo=Some(maxColIdx))
 
       logger.debug(s"Original Column Count was $originalColumnCount")
       logger.debug(s"Offset is $columnCountOffset")
@@ -893,7 +894,6 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
           logger.error(e.getMessage,e)
           throw new IKodaMLException(e.getMessage,e)
       }
-
   }
 
 
