@@ -1117,6 +1117,8 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       }
 
       val columnHeadRDD = spark.sparkContext.parallelize(addOneToIndex.toList.sorted)
+
+
       DataFrameUtils.deletePartition(s"$newPath${File.separator}${
         fileName
       }-columnMap")

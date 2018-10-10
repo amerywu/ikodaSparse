@@ -30,6 +30,7 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
   lazy val sparkdrivermemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdrivermemory")).getOrElse("6g")
   lazy val sparkexecutormemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkexecutormemory")).getOrElse("6g")
   lazy val appname = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.appname")).getOrElse("ikoda-"+System.currentTimeMillis())
+  lazy val sparkdriverbindAddress = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdriverbindAddress")).getOrElse("127.0.0.1")
   lazy val localo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.local"))
   lazy val streamingo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.streaming"))
 
@@ -115,13 +116,15 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
 
             val sparksession: SparkSession = SparkSession.builder
               .appName(appname)
+               // .enableHiveSupport()
               .master(dirRoot())
-              .config("spark.sql.warehouse.dir", "target/spark-warehouse")
+             // .config("spark.sql.warehouse.dir", "./spark-warehouse")
               .config("spark.streaming.stopGracefullyOnShutdown", "true")
               .config("spark.cassandra.connection.host", sparkcassandraconnectionhost)
               .config("spark.driver.maxResultSize", sparkdrivermaxResultSize)
               .config("spark.network.timeout", sparknetworktimeout)
               .config("spark.driver.memory", sparkdrivermemory)
+              .config("spark.driver.bindaddress", sparkdriverbindAddress)
               .config("spark.executor.memory", sparkexecutormemory)
               .config("spark.jars.packages", "datastax:spark-cassandra-connector:" + datastaxpackageversion)
               .config("spark.cores.max", sparkcoresmax)

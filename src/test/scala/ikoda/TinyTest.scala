@@ -5,7 +5,7 @@ import java.util.UUID
 
 import grizzled.slf4j.Logging
 import ikoda.sparse.{CellTuple, RDDLabeledPoint}
-import ikoda.utilobjects.{SparkConfProviderWithStreaming, UtilFunctions}
+import ikoda.utilobjects.{DataFrameUtils, SparkConfProviderWithStreaming, UtilFunctions}
 import ikoda.utils.{SSm, Spreadsheet, TicToc}
 import org.apache.spark.sql.SparkSession
 import org.scalatest._
@@ -27,13 +27,24 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     openTiny
   }
 
+  "Tiny Test" should "reorder columns" in {
 
 
+    reorderColumns()
+  }
 
+  /*****************
 
   it should "save locally" in
     {
       saveLocalTest()
+    }
+
+
+
+  it should "convert to df" in
+    {
+      convertToDF()
     }
 
   it should "convert to term frequency" in
@@ -50,6 +61,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     {
       loadLocalTest()
     }
+
 
   it should "reset indices" in
     {
@@ -145,7 +157,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     {
       convertToMLPackage()
     }
-  /********************************/
+***************/
   /******
   it should "merge schemas from csv" in
     {
@@ -153,7 +165,10 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     }  ************/
 
 
-
+  it should "close spark" in
+    {
+      closeSpark()
+    }
 
   def medianTest(): Unit =
   {
@@ -161,7 +176,6 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     logger.debug("medianTest\n" + result.mkString(" || "))
     assert(result.get(2).get.value == 3)
     assert(result.get(3).get.value == 4)
-
   }
 
 
@@ -170,9 +184,6 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     logger.debug("saveLocalTest ")
     RDDLabeledPoint.printSparseLocally(sparse,"savedLocal",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput")
     logger.debug("saved\n")
-
-
-
   }
 
   def loadLocalTest(): Unit =
@@ -180,12 +191,19 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     logger.debug("loadLocalTest ")
     val sparse1=sparse.loadLibSvmPJ1(s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput${File.separator}savedLocal")
     logger.debug("loadLocalTest\n"+sparse1.info())
-
-
-
   }
 
+  def reorderColumns(): Unit =
+  {
+    val out=sparse.lpData().map
+    {
+      lp=>
+        val map=SortedMap((lp.features.toSparse.indices zip lp.features.toSparse.values):_*)
+        (map.keySet.toArray,map.values.toArray)
+    }
 
+    logger.info(out.collect().mkString("\n"))
+  }
 
   def resetIndicesTest(): Unit =
   {
@@ -197,11 +215,6 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     RDDLabeledPoint.printSparseLocally(sparse3,"savedLocalReset",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput")
     var colIdx=0
     sparse3.getColumnHeads()
-
-
-
-
-
   }
 
 
@@ -787,6 +800,50 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val mlpackageRDD = sparse1.convertToMLLibPackageRDD()
       logger.debug(tt.toc("convertToMLPackage"))
       logger.debug("mlpackageRDD label"+mlpackageRDD.take(1)(0).label+" indices: "+mlpackageRDD.take(1)(0).features.toSparse.indices.mkString(","))
+
+
+    }
+    catch
+      {
+        case e: Exception =>
+          logger.error(e.getMessage, e)
+          fail(e.getMessage)
+      }
+  }
+  def convertToDF(): Unit =
+  {
+
+    try
+    {
+      val tt: TicToc = new TicToc
+      val sparse1 = sparse.copy()
+      logger.debug(tt.tic("convertToDF"))
+      val df = sparse1.transformRDDToDataFrame()
+      logger.debug(tt.toc("convertToDF"))
+      logger.debug(DataFrameUtils.showString(df,8))
+
+
+    }
+    catch
+      {
+        case e: Exception =>
+          logger.error(e.getMessage, e)
+          fail(e.getMessage)
+      }
+  }
+
+
+  def closeSpark(): Unit =
+  {
+
+    try
+    {
+      logger.debug("Closing spark")
+
+
+        killSparkStreamingContext
+      clearSession
+        spark.close()
 
 
     }

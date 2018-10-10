@@ -81,7 +81,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
     val sqlContext = spark.sqlContext
     import sqlContext.implicits._
-    lpData().toDF
+    lpData().map(lp=>(lp.label,lp.features))toDF("label", "features")
   }
 
 

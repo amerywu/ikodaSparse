@@ -12,6 +12,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 
 import scala.collection.mutable
+import scala.util.Try
 
 class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformations(ilp)
 {
@@ -78,16 +79,7 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
     try
     {
       path=inpath
-      logger.info(s"Loading LibSvm Data. $path${File.separator}${fileName}")
 
-      val df= spark.read.format("libsvm").load(s"$path${File.separator}${fileName}_data_sparse")
-
-      val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
-      {
-
-        //r//ow => LabeledPoint(row.getDouble(0), row(4).asInstanceOf[Vector])
-        r=> (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),0,UUID.randomUUID().toString)
-      }
 
       val name=fileName
 
@@ -97,6 +89,21 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
       logger.debug("\n"+newtargetmap.mkString("\n"))
       logger.info("Loading Column Heads.")
       val newcolheads=loadColumnHeaders(fileName, path)
+
+
+      logger.info(s"Loading LibSvm Data. $path${File.separator}${fileName}")
+
+      val df= spark.read.format("libsvm").option("numFeatures", newcolheads.size).load(s"$path${File.separator}${fileName}_data_sparse")
+      logger.info(DataFrameUtils.showString(df,5))
+
+      val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
+      {
+
+        //r//ow => LabeledPoint(row.getDouble(0), row(4).asInstanceOf[Vector])
+        r=> (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),0,UUID.randomUUID().toString)
+      }
+
+
       val sparseout=new RDDLabeledPoint(newdata,newcolheads,newtargetmap,name)
 logger.info(sparseout.info())
       if(validateColumns) {
@@ -176,7 +183,6 @@ logger.info(sparseout.info())
     {
       case e: Exception =>
       {
-
         logger.error(s"${ilp.name}")
         logger.error(s"Could not load columnHeadMap: ${e.getMessage}", e)
         throw new Exception(s"${ilp.name} : ${e.getMessage}", e)
@@ -218,16 +224,20 @@ logger.info(sparseout.info())
       }
 
       logger.debug(s"path $path")
-
-      val df=spark.read.format("libsvm").load( path)
+      val newtargetmap=loadTargetMap( path, true)
+      val newcolmap=loadColumnHeaders( path,true)
+      val df=spark.read.format("libsvm").option("numFeatures", newcolmap.size).load( path)
+      logger.info("Loaded")
       logger.debug(DataFrameUtils.showString(df,10))
         val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
         {
-          r => (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),r.hashCode(),UUID.randomUUID().toString)
+          r =>
+
+            (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),r.hashCode(),UUID.randomUUID().toString)
+
         }
 
-      val newtargetmap=loadTargetMap( path, true)
-      val newcolmap=loadColumnHeaders( path,true)
+
 
       val sparseout=new RDDLabeledPoint(newdata,newcolmap,newtargetmap,path)
       logger.info(sparseout.info)

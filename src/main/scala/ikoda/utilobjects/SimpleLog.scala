@@ -10,11 +10,7 @@ import grizzled.slf4j.Logging
 trait SimpleLog extends Logging
 {
   
-  
-  def SimpleLog()
-  {
-  
-  }
+
   
   var logFile: String = new File(".").getCanonicalPath
   val startTime:Long=System.currentTimeMillis()
