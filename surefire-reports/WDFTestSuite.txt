@@ -1,18 +1,42 @@
 [36mDiscovery starting.[0m
-[36mDiscovery completed in 501 milliseconds.[0m
-[36mRun starting. Expected test count is: 5[0m
+[36mDiscovery completed in 500 milliseconds.[0m
+[36mRun starting. Expected test count is: 29[0m
 [32mTinyTest:[0m
 [32mTiny Test[0m
 [32m- should open a libsvm file[0m
 [32mTiny Test[0m
 [32m- should reorder columns[0m
+[32m- should save locally[0m
+[32m- should convert to df[0m
+[32m- should convert to term frequency[0m
+[32m- should convert to tf-idf[0m
+[32m- should open locally[0m
+[32m- should reset indices[0m
+[32m- should find the median value for each row[0m
+[32m- should map out[0m
+[32m- should add a column in[0m
+[32m- should change a label[0m
+[32m- should calculate standard deviation for each column[0m
+[32m- should sum each column[0m
+[32m- should perform an operation on each column[0m
+[32m- should aggregate by label[0m
+[32m- should even the proportion of columns[0m
+[32m- should find rows containing a given column vakue[0m
+[32m- should getProportion of Columns that have a non zero value[0m
+[32m- should reduce to label by aggregation[0m
+[32m- should get a random subset[0m
+[32m- should remove columns[0m
+[32m- should remove columns distributed[0m
+[32m- should merge schemas[0m
+[32m- should make hashs[0m
+[32m- should convert to ml package lp[0m
 [32m- should close spark[0m
 [32mStackSpec:[0m
 [32mA Stack[0m
 [32m- should pop values in last-in-first-out order[0m
 [32m- should throw NoSuchElementException if an empty stack is popped[0m
-[36mRun completed in 6 seconds, 620 milliseconds.[0m
-[36mTotal number of tests run: 5[0m
+[36mRun completed in 15 seconds, 730 milliseconds.[0m
+[36mTotal number of tests run: 29[0m
 [36mSuites: completed 3, aborted 0[0m
-[36mTests: succeeded 5, failed 0, canceled 0, ignored 0, pending 0[0m
+[36mTests: succeeded 29, failed 0, canceled 0, ignored 0, pending 0[0m
 [32mAll tests passed.[0m

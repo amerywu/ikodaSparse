@@ -2,3 +2,5 @@ unitTestOutput/
 target/
 logs/
 .idea/
+surefire-reports/
+spark-warehouse/

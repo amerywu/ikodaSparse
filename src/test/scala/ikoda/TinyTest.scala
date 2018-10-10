@@ -33,7 +33,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     reorderColumns()
   }
 
-  /*****************
+
 
   it should "save locally" in
     {
@@ -157,7 +157,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     {
       convertToMLPackage()
     }
-***************/
+  /********************************/
   /******
   it should "merge schemas from csv" in
     {

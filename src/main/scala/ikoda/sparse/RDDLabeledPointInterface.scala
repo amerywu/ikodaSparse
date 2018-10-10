@@ -1104,7 +1104,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       }-targetMap")
 
       logger.info(s"Saving TargetMap $newPath${File.separator}${fileName}-targetMap")
-      val rddout:RDD[(String,Double)] = spark.sparkContext.parallelize(ilp.targetMap.toSeq)
+      val rddout:RDD[String] = spark.sparkContext.parallelize(ilp.targetMap.map(e=> s"${e._1},${e._2}" ).toSeq)
       rddout.saveAsTextFile(s"$newPath${File.separator}${
         fileName
       }-targetMap")
@@ -1116,7 +1116,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
         cht => addOneToIndex += ColumnHeadTuple(cht.numericLabel + 1, cht.stringLabel)
       }
 
-      val columnHeadRDD = spark.sparkContext.parallelize(addOneToIndex.toList.sorted)
+      val columnHeadRDD:RDD[String] = spark.sparkContext.parallelize(addOneToIndex.toList.sorted.map(cht=> s"${cht.numericLabel},${cht.stringLabel}"))
 
 
       DataFrameUtils.deletePartition(s"$newPath${File.separator}${

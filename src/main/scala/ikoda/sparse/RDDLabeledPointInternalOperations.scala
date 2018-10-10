@@ -1100,11 +1100,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       val sb:StringBuilder=new mutable.StringBuilder()
       targetMap.foreach
       {
-        e=> sb.append("(")
+        e=>
           sb.append(e._1)
           sb.append(",")
           sb.append(e._2)
-          sb.append(")\n")
+          sb.append("\n")
 
 
       }
@@ -1132,11 +1132,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       val sb:StringBuilder=new mutable.StringBuilder()
       colMap.foreach
       {
-        case (idx,cht)=> sb.append("ColumnHeadTuple(")
+        case (idx,cht)=>
           sb.append(cht.numericLabel+offset)
           sb.append(",")
           sb.append(cht.stringLabel)
-          sb.append(")\n")
+          sb.append("\n")
 
 
       }
