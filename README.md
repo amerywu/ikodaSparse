@@ -1,7 +1,7 @@
 # ikodaSparse
 ikodaSparse maintains sparse data along with its meaningful text values. 
 
-`Libsvm` format data (and the analogous `LabeledPoint` Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. However, ikodaSparse maintains the text values for column heads and text category names for the labels.  
+`Libsvm` format data (and the analogous `LabeledPoint` Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. In contrast, ikodaSparse maintains the text values for column heads and text category names for the labels.  
 
 As an example, this allows natural language word frequency data to be processed in libsvm format without losing the meaningful information required when reporting and providing data visualization of the data analysis.
 
