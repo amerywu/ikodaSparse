@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuite 
-errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.StackSpec" tests="2" time="0.006" timestamp="2018-10-10T14:35:01">
+errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.StackSpec" tests="2" time="0.005" timestamp="2018-10-10T18:26:30">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment">
     </property>

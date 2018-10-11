@@ -22,7 +22,7 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
 {
 
 
-  private [sparse] val defaultPartitionSize:Int=1000
+
   private [sparse] var columnCountOffset:Int = 0
 
 

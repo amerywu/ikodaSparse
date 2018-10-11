@@ -202,18 +202,16 @@ logger.info(sparseout.info())
     else if (fn.toUpperCase.endsWith(".LIBSVM"))
     {
       fn.substring(0, fn.length - 7)
-
     }
     else
     {
       fn
     }
-
   }
 
 
   @throws(classOf[Exception])
-  def loadLibSvmLocal(inpth: String, partitions:Int=defaultPartitionSize, validateColumns:Boolean=true): RDDLabeledPoint =
+  def loadLibSvmLocal(inpth: String, validateColumns:Boolean=true): RDDLabeledPoint =
   {
     try
     {
@@ -232,7 +230,6 @@ logger.info(sparseout.info())
         val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
         {
           r =>
-
             (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),r.hashCode(),UUID.randomUUID().toString)
 
         }

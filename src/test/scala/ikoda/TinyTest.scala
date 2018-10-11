@@ -189,7 +189,13 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
   def loadLocalTest(): Unit =
   {
     logger.debug("loadLocalTest ")
-    val sparse1=sparse.loadLibSvmLocal(s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput${File.separator}savedLocal")
+    val t=RDDLabeledPoint.loadLibSvmLocal(s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput${File.separator}savedLocal")
+    val sparse1:RDDLabeledPoint=t.isSuccess match
+    {
+      case true=> t.get
+      case _ => logger.error(t.failed.get.getMessage,t.failed.get)
+        throw new IKodaMLException(t.failed.get.getMessage)
+    }
     logger.debug("loadLocalTest\n"+sparse1.info())
   }
 
@@ -289,13 +295,9 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
   {
     try
     {
-
-
-      val sparse0: RDDLabeledPoint = new RDDLabeledPoint
-      val  sparseout=sparse0.loadLibSvmLocal( "./unitTestInput/tiny.libsvm",3)
+      val  sparseout=RDDLabeledPoint.loadLibSvmLocal( "./unitTestInput/tiny.libsvm").get
       assert(sparseout.getRowCountCollected >0 )
       sparseout
-
 
     }
     catch
@@ -497,11 +499,17 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val tt: TicToc = new TicToc
 
       val sparse1: RDDLabeledPoint = new RDDLabeledPoint
-      val sparseout0=sparse1.loadLibSvmLocal( "./unitTestInput/lltiny.libsvm",3)
-      logger.debug("BEFORE\n" + RDDLabeledPoint.countRowsByTarget(sparseout0).collect().mkString("\n"))
+      val t=RDDLabeledPoint.loadLibSvmLocal( "./unitTestInput/lltiny.libsvm")
+      val sparse2:RDDLabeledPoint=t.isSuccess match
+        {
+        case true=> t.get
+        case false => logger.error(t.failed.get.getMessage,t.failed.get)
+          throw new IKodaMLException(t.failed.get.getMessage)
+      }
+      logger.debug("BEFORE\n" + RDDLabeledPoint.countRowsByTarget(sparse2).collect().mkString("\n"))
 
       logger.debug(tt.tic("evenLabelProportionTest"))
-      val sparseout=RDDLabeledPoint.evenProportionPerTarget1(sparseout0).get
+      val sparseout=RDDLabeledPoint.evenProportionPerTarget1(sparse2).get
       logger.debug(tt.toc("evenLabelProportionTest"))
       logger.debug("AFTER\n" + RDDLabeledPoint.countRowsByTarget(sparseout).collect.mkString("\n"))
     }
@@ -682,7 +690,18 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val tt: TicToc = new TicToc
       val sparse1 = sparse.copy()
       val sparse0: RDDLabeledPoint = new RDDLabeledPoint
-      val  sparse2=sparse0.loadLibSvmLocal( "./unitTestInput/lltiny.libsvm",3)
+
+
+      val t=RDDLabeledPoint.loadLibSvmLocal( "./unitTestInput/lltiny.libsvm")
+      val sparse2:RDDLabeledPoint=t.isSuccess match
+      {
+        case true=> t.get
+        case false => logger.error(t.failed.get.getMessage,t.failed.get)
+          throw new IKodaMLException(t.failed.get.getMessage)
+      }
+
+
+
       logger.debug(tt.tic("\n+++++++++++++++\nmergeSchemas\n+++++++++++++++\n"))
 
       logger.debug(sparse1.info)

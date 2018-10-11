@@ -10,6 +10,7 @@ import ikoda.utils.TicToc
 import org.apache.spark.ml.feature.LabeledPoint
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.Dataset
 
 import scala.collection.immutable.SortedMap
 import scala.collection.{immutable, mutable}
@@ -53,6 +54,24 @@ object RDDLabeledPoint extends Logging
 
   }
 
+  }
+
+
+  def loadLibSvmLocal(inpth: String, validateColumns:Boolean=true): Try[RDDLabeledPoint] =
+  {
+
+    Try(new RDDLabeledPoint().loadLibSvmLocal( inpth))
+  }
+
+
+  def loadLibSvm(fileName: String, path: String, validateColumns:Boolean=false): Try[RDDLabeledPoint] =
+  {
+    Try(new RDDLabeledPoint().loadLibSvm(fileName,path,validateColumns))
+  }
+
+  def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): Try[RDDLabeledPoint] =
+  {
+    Try(new RDDLabeledPoint().loadLibSvmFromHelper(data,columns,targets,datasetName,validateCompleteness))
   }
 
 
