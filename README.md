@@ -16,6 +16,7 @@ The main function of ikodaSparse is to manipulate large sparse data.
 ### ikodaSparse can:
 1. Maintain a map of numeric feature identifiers with text names
 1. Maintain a map of numeric labels/targets with text labels
+1. Mainatin a UUID for each row
 1. Remove columns/features
 1. Reorder columns/features
 1. Add columns
