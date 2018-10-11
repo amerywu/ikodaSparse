@@ -1,7 +1,7 @@
 # ikodaSparse
-ikodaSparse maintains sparse data along with its meaningful text values. 
+***ikodaSparse maintains sparse data along with its meaningful text values. 
 
-`Libsvm` format data (and the analogous `LabeledPoint` Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. In contrast, ikodaSparse maintains the text values for column heads and text category names for the labels.  
+***`Libsvm` format data (and the analogous `LabeledPoint` Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. In contrast, ikodaSparse maintains the text values for column heads and text category names for the labels.  
 
 As an example, this allows natural language word frequency data to be processed in libsvm format without losing the meaningful information required when reporting and providing data visualization of the data analysis.
 
@@ -16,7 +16,7 @@ The main function of ikodaSparse is to manipulate large sparse data.
 ### ikodaSparse can:
 1. Maintain a map of numeric feature identifiers with text names
 1. Maintain a map of numeric labels/targets with text labels
-1. Mainatin a UUID for each row
+1. Maintain a UUID for each row
 1. Remove columns/features
 1. Reorder columns/features
 1. Add columns
