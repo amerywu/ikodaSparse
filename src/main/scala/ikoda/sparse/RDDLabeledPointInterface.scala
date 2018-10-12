@@ -313,7 +313,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
     {
       val rddColAsRow:RDD[(Int,Seq[CellTuple])]=transformLabeledPointRDDToColumnsRdd
       val colSums=soColSums()
-      val corpusTotal=getRowCountCollected()
+      val corpusTotal=rowCount
 
       def calculateIDF(seqCt:Seq[CellTuple],idf:Double): Seq[CellTuple] =
       {
@@ -324,7 +324,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       }
 
 
-      if (getRowCountEstimate(10000) != colSums.size)
+      if (rowCountEstimate != colSums.size)
       {
         logger.warn(
           "WARNING: soInverseDocumentFrequency the rdd column count does not equal the constants " +
@@ -629,14 +629,11 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
   {
     try
     {
-
       logger.trace("looking for " + colIdxSet)
       val newdata = ilp.dataRDD.filter(r => colIdxSet.subsetOf(r._1.features.toSparse.indices.toSet))
-      val estimate=getRowCountCollected()
-      logger.info("Sparse out row count (estimated)" + estimate)
+      logger.info("Sparse out row count " + rowCount)
 
-
-      if (estimate == 0)
+      if (rowCount == 0)
       {
         logger.warn("sparseOperationGetRowsContainingColIdx: Retrieved row count of 0")
         None
@@ -731,7 +728,6 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       val tuple:Tuple2[mutable.ListMap[Int, ColumnHeadTuple], mutable.HashMap[Int, Int]] = internalSubsetColumnHeads(keep.map(r => r._1).collect())
       val newdata = internalSubsetColumnIndices1(keep, tuple._1, tuple._2)
       val newRDDLP: RDDLabeledPoint = new RDDLabeledPoint(newdata,tuple._1,copyTargetMap,ilp.name)
-
       newRDDLP
     }
     catch
@@ -1066,7 +1062,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
   }
 
   @throws(classOf[Exception])
-  private [sparse] def printSparseLocally( fileName: String, inpath: String): Unit =
+  private [sparse] def printSparseLocally( fileName: String, inpath: String, truncateAt:Int): Unit =
   {
     try
     {
@@ -1076,7 +1072,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
 
       printLocal(s"${pathAndFile}-targetMap.txt",targetMapAsString())
       printLocal(s"${pathAndFile}-columnMap.txt",columnMapAsString())
-      printLocal(s"${pathAndFile}.libsvm",libSVMFileAsString())
+      printLocal(s"${pathAndFile}.libsvm",libSVMFileAsString(truncateAt))
 
       val columnMap=ilp.columnHeadMap
       val data = lpData().collect

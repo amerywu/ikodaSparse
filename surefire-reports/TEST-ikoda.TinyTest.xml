@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuite 
-errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="27" time="14.157" timestamp="2018-10-10T18:26:16">
+errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="3" time="7.955" timestamp="2018-10-12T13:14:59">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment">
     </property>
@@ -95,85 +95,13 @@ errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="
     <property name="sun.cpu.isalist" value="amd64"> </property>
   </properties>
   <testcase 
-  name="Tiny Test should open a libsvm file" classname="ikoda.TinyTest" time="5.721">
+  name="should convert to term frequency" classname="ikoda.TinyTest" time="7.423">
 </testcase>
   <testcase 
-  name="Tiny Test should reorder columns" classname="ikoda.TinyTest" time="0.598">
+  name="should convert to tf-idf" classname="ikoda.TinyTest" time="0.375">
 </testcase>
   <testcase 
-  name="Tiny Test should save locally" classname="ikoda.TinyTest" time="0.089">
-</testcase>
-  <testcase 
-  name="Tiny Test should convert to df" classname="ikoda.TinyTest" time="0.428">
-</testcase>
-  <testcase 
-  name="Tiny Test should convert to term frequency" classname="ikoda.TinyTest" time="0.075">
-</testcase>
-  <testcase 
-  name="Tiny Test should convert to tf-idf" classname="ikoda.TinyTest" time="0.316">
-</testcase>
-  <testcase 
-  name="Tiny Test should open locally" classname="ikoda.TinyTest" time="0.476">
-</testcase>
-  <testcase 
-  name="Tiny Test should reset indices" classname="ikoda.TinyTest" time="0.891">
-</testcase>
-  <testcase 
-  name="Tiny Test should find the median value for each row" classname="ikoda.TinyTest" time="0.061">
-</testcase>
-  <testcase 
-  name="Tiny Test should map out" classname="ikoda.TinyTest" time="0.285">
-</testcase>
-  <testcase 
-  name="Tiny Test should add a column in" classname="ikoda.TinyTest" time="0.857">
-</testcase>
-  <testcase 
-  name="Tiny Test should change a label" classname="ikoda.TinyTest" time="0.643">
-</testcase>
-  <testcase 
-  name="Tiny Test should calculate standard deviation for each column" classname="ikoda.TinyTest" time="0.184">
-</testcase>
-  <testcase 
-  name="Tiny Test should sum each column" classname="ikoda.TinyTest" time="0.049">
-</testcase>
-  <testcase 
-  name="Tiny Test should perform an operation on each column" classname="ikoda.TinyTest" time="0.761">
-</testcase>
-  <testcase 
-  name="Tiny Test should aggregate by label" classname="ikoda.TinyTest" time="0.043">
-</testcase>
-  <testcase 
-  name="Tiny Test should even the proportion of columns" classname="ikoda.TinyTest" time="0.578">
-</testcase>
-  <testcase 
-  name="Tiny Test should find rows containing a given column vakue" classname="ikoda.TinyTest" time="0.108">
-</testcase>
-  <testcase 
-  name="Tiny Test should getProportion of Columns that have a non zero value" classname="ikoda.TinyTest" time="0.071">
-</testcase>
-  <testcase 
-  name="Tiny Test should reduce to label by aggregation" classname="ikoda.TinyTest" time="0.109">
-</testcase>
-  <testcase 
-  name="Tiny Test should get a random subset" classname="ikoda.TinyTest" time="0.056">
-</testcase>
-  <testcase 
-  name="Tiny Test should remove columns" classname="ikoda.TinyTest" time="0.088">
-</testcase>
-  <testcase 
-  name="Tiny Test should remove columns distributed" classname="ikoda.TinyTest" time="0.693">
-</testcase>
-  <testcase 
-  name="Tiny Test should merge schemas" classname="ikoda.TinyTest" time="0.454">
-</testcase>
-  <testcase 
-  name="Tiny Test should make hashs" classname="ikoda.TinyTest" time="0.368">
-</testcase>
-  <testcase 
-  name="Tiny Test should convert to ml package lp" classname="ikoda.TinyTest" time="0.046">
-</testcase>
-  <testcase 
-  name="Tiny Test should close spark" classname="ikoda.TinyTest" time="0.094">
+  name="should close spark" classname="ikoda.TinyTest" time="0.141">
 </testcase>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

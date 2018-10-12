@@ -382,7 +382,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   {
     try
     {
-      logger.debug(s"sparseOperationRemoveRowsByLabels RDD started with (estimated) ${getRowCountEstimate()} rows")
+      logger.debug(s"sparseOperationRemoveRowsByLabels RDD started with (estimated) ${rowCountEstimate} rows")
       logger.debug(s"sparseOperationRemoveRowsByLabels Removing labels: ${labelsToRemove.mkString(", ")}")
       val tempRDD: RDD[(LabeledPoint, Int, String)] = ilp.dataRDD.filter(r => !labelsToRemove.contains(r._1.label))
 
@@ -412,13 +412,13 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   {
     try
     {
-      logger.debug(s"internalRemoveRowsByHashcode RDD started with (estimated) ${getRowCountEstimate()} rows")
+      logger.debug(s"internalRemoveRowsByHashcode RDD started with (estimated) ${rowCountEstimate} rows")
       logger.debug(s"internalRemoveRowsByHashcode Removing labels: ${hashcodesToRemove.mkString(", ")}")
       val tempRDD: RDD[(LabeledPoint, Int, String)] = ilp.dataRDD.filter(r => !hashcodesToRemove.contains(r._2))
 
 
       val sparseOut= new RDDLabeledPoint(tempRDD,copyColumnMap,copyTargetMap,getName())
-      logger.debug(s"internalRemoveRowsByHashcode RDD ended with (estimated) ${sparseOut.getRowCountEstimate()} rows")
+      logger.debug(s"internalRemoveRowsByHashcode RDD ended with (estimated) ${sparseOut.rowCountEstimate} rows")
 
       logger.info(sparseOut.info)
       sparseOut
@@ -1072,18 +1072,42 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
     }
   }
 
-  def libSVMFileAsString():String= {
+  def libSVMFileAsString(truncateAt:Int):String= {
 
     val sparse0=internalCheckColumnOrder()
+    val dp:String=s"%1.${truncateAt}f"
+    logger.debug(dp)
 
-    val rows:Array[String]=sparse0.lpData().map { case LabeledPoint(label, features) =>
-      val sb = new StringBuilder(label.toString)
-      features.foreachActive { case (i, v) =>
-        sb += ' '
-        sb ++= s"${i + 1}:$v"
-      }
-      sb.mkString
-    }.collect()
+    val rows:Array[String]= truncateAt >0 match
+      {
+      case true=>
+
+        def truncateValue(value:Double):String=
+        {
+            dp.format(value)
+        }
+
+
+        sparse0.lpData().map { case LabeledPoint(label, features) =>
+          val sb = new StringBuilder(label.toString)
+          features.foreachActive { case (i, v) =>
+            sb += ' '
+            sb ++= s"${i + 1}:"+truncateValue(v)
+          }
+          sb.mkString
+        }.collect()
+      case false =>
+        sparse0.lpData().map { case LabeledPoint(label, features) =>
+          val sb = new StringBuilder(label.toString)
+          features.foreachActive { case (i, v) =>
+            sb += ' '
+            sb ++= s"${i + 1}:$v"
+          }
+          sb.mkString
+        }.collect()
+    }
+
+
 
     val sbOut:mutable.StringBuilder=new mutable.StringBuilder()
     rows.foreach(r=>sbOut.append(r + "\n"))

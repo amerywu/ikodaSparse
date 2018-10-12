@@ -24,7 +24,8 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
 
 
   private [sparse] var columnCountOffset:Int = 0
-
+  lazy val rowCountEstimate:Double = getRowCountEstimate(5000)
+  lazy val rowCount:Long = getRowCountCollected()
 
   protected [sparse] var path:String="."
 
@@ -82,7 +83,7 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
   {
     val sb:mutable.StringBuilder=new mutable.StringBuilder()
     sb.append(s"\n${ilp.name}")
-    sb.append(s"\nRows (Estimated): ${getRowCountEstimate}")
+    sb.append(s"\nRows (Estimated): ${rowCountEstimate}")
     sb.append(s"\nColumns: ${getColumnCount}  - $columnCountOffset = ${getColumnCount-columnCountOffset}")
     sb.append(s"\nTargets: ${getTargets().size}")
     sb.append(s"\n Partitions: ${ilp.dataRDD.partitions.size}")
@@ -90,13 +91,9 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
   }
 
 
-  def getRowCountEstimate(): Double =
-  {
-    getRowCountEstimate(5000)
 
-  }
 
-  def getRowCountEstimate(timeOut:Long): Double =
+  private def getRowCountEstimate(timeOut:Long): Double =
   {
     val countApprox:BoundedDouble=ilp.dataRDD.countApprox(timeOut,0.90).getFinalValue()
 
@@ -370,7 +367,7 @@ abstract class RDDLabeledPointParent(ilp:LpData)  extends  Serializable with Uti
 
   }
 
-  def getRowCountCollected(): Long =
+  private def getRowCountCollected(): Long =
   {
     val tt:TicToc=new TicToc
     tt.tic("getRowCountCollected")

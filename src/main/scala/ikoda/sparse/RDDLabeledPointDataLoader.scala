@@ -149,6 +149,40 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
+  def loadLibSvmFromHelper1(data:Dataset[LabeledPoint], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  {
+    try
+    {
+      val newData=data.rdd
+      val name=datasetName
+      logger.info("Loading Target Map.")
+      val newtargets=targets
+
+      val dd:RDD[(LabeledPoint,Int,String)]=data.rdd.map{lp =>
+        (lp,
+          s"${lp.label}${lp.features.toSparse.indices}${lp.features.toSparse.values}".hashCode,
+          createUUID().toString)}
+
+      logger.info("Loading Column Heads.")
+      val newcolheads=columns
+      val sparseout=new RDDLabeledPoint(dd,newcolheads,newtargets,name)
+      logger.info(sparseout.info)
+      if(validateCompleteness) {
+        sparseout.validateColumnCount
+      }
+      sparseout
+    }
+    catch
+      {
+        case e: Exception =>
+          logger.error(s"${ilp.name}")
+          throw new Exception(s"${ilp.name} : ${e.getMessage}",e)
+      }
+  }
+
+
+
+  @throws(classOf[Exception])
   def loadLibSvmSchemaFromHelper1(columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String): RDDLabeledPoint =
   {
     try

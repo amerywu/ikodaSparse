@@ -12,7 +12,7 @@ import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 
-import scala.collection.immutable.SortedMap
+import scala.collection.immutable.{Queue, SortedMap}
 import scala.collection.{immutable, mutable}
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.Try
@@ -51,7 +51,6 @@ object RDDLabeledPoint extends Logging
     case true => Some(r.get)
     case false => logError(r)
         None
-
   }
 
   }
@@ -191,7 +190,7 @@ object RDDLabeledPoint extends Logging
 
 
 
-  def evenProportionPerTarget1(sparse0:RDDLabeledPoint): Option[RDDLabeledPoint] =
+  def evenProportionPerTarget(sparse0:RDDLabeledPoint): Option[RDDLabeledPoint] =
   {
     processResult(Try(sparse0.soEvenProportionPerTarget1()))
   }
@@ -204,7 +203,7 @@ object RDDLabeledPoint extends Logging
   }
 
 
-  def removeDuplicateRows1(sparse0:RDDLabeledPoint): Option[RDDLabeledPoint] =
+  def removeDuplicateRows(sparse0:RDDLabeledPoint): Option[RDDLabeledPoint] =
   {
     processResult(Try(sparse0.soRemoveDuplicateRows1()))
   }
@@ -252,6 +251,15 @@ object RDDLabeledPoint extends Logging
     processResult(Try(sparse0.soRemoveColumns1(columnIndices)))
   }
 
+  def removeColumns(sparse0:RDDLabeledPoint, columnIndices: Set[Int]): Option[RDDLabeledPoint] =
+  {
+    val q:mutable.Queue[Int]=new mutable.Queue[Int]()
+    q ++ columnIndices
+
+    processResult(Try(sparse0.soRemoveColumns1(q)))
+  }
+
+
   def removeColumnsDistributed(sparse0:RDDLabeledPoint, columnIndices: Set[Int]): Option[RDDLabeledPoint] =
   {
     processResult(Try(sparse0.soRemoveColumnsDistributed(columnIndices,true)))
@@ -277,7 +285,7 @@ object RDDLabeledPoint extends Logging
     }
   }
 
-  def removeRowsByLabels1( sparse0:RDDLabeledPoint,labelsToRemove: Seq[Double]): Option[RDDLabeledPoint] =
+  def removeRowsByLabels( sparse0:RDDLabeledPoint,labelsToRemove: Seq[Double]): Option[RDDLabeledPoint] =
   {
     processResult(Try(sparse0.soRemoveRowsByLabels1(labelsToRemove)))
   }
@@ -298,7 +306,7 @@ object RDDLabeledPoint extends Logging
   {
     sparse0.isDefined match
       {
-      case true=> termFrequencyNormalization(sparse0)
+      case true=> termFrequencyNormalization(sparse0.get)
       case _ => logger.warn("No data for term frequency")
         None
     }
@@ -323,18 +331,18 @@ object RDDLabeledPoint extends Logging
   }
 
   @throws(classOf[Exception])
-  def printSparseLocally(sparse0:RDDLabeledPoint, fileName: String, inpath: String): Unit =
+  def printSparseLocally(sparse0:RDDLabeledPoint, fileName: String, inpath: String, truncateAt:Int=0): Unit =
   {
 
-       sparse0.printSparseLocally(fileName,inpath)
+       sparse0.printSparseLocally(fileName,inpath,truncateAt)
   }
 
   @throws(classOf[Exception])
-  def printSparseLocally(sparse0:Option[RDDLabeledPoint], fileName: String, inpath: String): Unit =
+  def printSparseLocally(sparse0:Option[RDDLabeledPoint], fileName: String, inpath: String, truncateAt:Option[Int]): Unit =
   {
     sparse0.isDefined match {
       case true=>
-        sparse0.get.printSparseLocally (fileName, inpath)
+        sparse0.get.printSparseLocally (fileName, inpath,truncateAt.getOrElse(0))
       case _ => logger.warn("No Data, Did NOT print to "+inpath)
     }
   }

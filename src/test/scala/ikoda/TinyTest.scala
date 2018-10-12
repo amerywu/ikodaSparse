@@ -19,8 +19,8 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
 
    lazy val sparse=openTiny
 
-/****************
-  ***********************/
+/****************  ***********************/
+
 
   "Tiny Test" should "open a libsvm file" in {
 
@@ -271,9 +271,9 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
   {
     try{
       logger.debug("term frequency ")
-      val sparse1=RDDLabeledPoint.termFrequencyNormalization(sparse).get
-      val sparse2=RDDLabeledPoint.inverseDocumentFrequency(sparse1).get
-      RDDLabeledPoint.printSparseLocally(sparse2,"tfidf",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput")
+      val sparse1=RDDLabeledPoint.termFrequencyNormalization(sparse)
+      val sparse2=RDDLabeledPoint.inverseDocumentFrequency(sparse1)
+      RDDLabeledPoint.printSparseLocally(sparse2,"tfidf",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput",Some(3))
     }
     catch
       {
@@ -296,7 +296,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     try
     {
       val  sparseout=RDDLabeledPoint.loadLibSvmLocal( "./unitTestInput/tiny.libsvm").get
-      assert(sparseout.getRowCountCollected >0 )
+      assert(sparseout.rowCount >0 )
       sparseout
 
     }
@@ -509,7 +509,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       logger.debug("BEFORE\n" + RDDLabeledPoint.countRowsByTarget(sparse2).collect().mkString("\n"))
 
       logger.debug(tt.tic("evenLabelProportionTest"))
-      val sparseout=RDDLabeledPoint.evenProportionPerTarget1(sparse2).get
+      val sparseout=RDDLabeledPoint.evenProportionPerTarget(sparse2).get
       logger.debug(tt.toc("evenLabelProportionTest"))
       logger.debug("AFTER\n" + RDDLabeledPoint.countRowsByTarget(sparseout).collect.mkString("\n"))
     }
@@ -582,8 +582,8 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       logger.debug(sparse1.info)
       val sparseOut = RDDLabeledPoint.randomSubset(sparse1,0.2)
       logger.debug(tt.toc("getProportionRandomSubset"))
-      logger.debug("resu1t size: " + sparseOut.get.getRowCountCollected)
-      assert(sparseOut.get.getRowCountCollected<6)
+      logger.debug("resu1t size: " + sparseOut.get.rowCount)
+      assert(sparseOut.get.rowCount<6)
 
 
 
@@ -607,7 +607,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       logger.debug(tt.tic("reduce"))
       val sparseOut = RDDLabeledPoint.reduceToTargetBySum1(sparse1).get
       logger.debug(tt.toc("reduce"))
-      logger.debug("resu1t size: " + sparseOut.getRowCountCollected)
+      logger.debug("resu1t size: " + sparseOut.rowCount)
       logger.debug(sparseOut.info)
       logger.debug(sparseOut.lpData().collect().mkString("\n"))
 
@@ -638,7 +638,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val sparseOut = RDDLabeledPoint.removeColumns(sparse1,q).get
       logger.debug(tt.toc("\n+++++++++++++++\nremoveColumns\n+++++++++++++++\n"))
       logger.debug(sparseOut.info)
-      logger.debug("resu1t size: " + sparseOut.getRowCountCollected)
+      logger.debug("resu1t size: " + sparseOut.rowCount)
       logger.debug(sparseOut.info)
       logger.debug(sparseOut.lpData().collect().mkString("\n"))
 
@@ -711,7 +711,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val sparseOut = sparse1.transformToRDDLabeledPointWithSchemaMatchingThis(sparse2).get
       logger.debug(tt.toc("\n+++++++++++++++\nmergeSchemas\n+++++++++++++++\n"))
       logger.debug(sparseOut.info)
-      logger.debug("sparseOut resu1t size: " + sparseOut.getRowCountCollected)
+      logger.debug("sparseOut resu1t size: " + sparseOut.rowCount)
 
       logger.debug("sparseOut Column Heads\n"+sparseOut.getColumnHeads().mkString("\n"))
       logger.debug("sparseOut Targets\n"+sparseOut.getTargets().mkString("\n"))
@@ -793,7 +793,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       val sparseOut = sparse1.transformToRDDLabeledPointWithSchemaMatchingThis(Spreadsheet.getInstance().getLibSvmProcessor("sparse2"))
       logger.debug(tt.toc("mergeSchemas"))
       logger.debug(sparseOut.info)
-      logger.debug("sparseOut resu1t size: " + sparseOut.getRowCountCollected)
+      logger.debug("sparseOut resu1t size: " + sparseOut.rowCount)
 
       logger.debug("sparseOut Column Heads"+sparseOut.getColumnHeads().mkString("\n"))
       assert(sparseOut.getColumnIndex("col7")==8)

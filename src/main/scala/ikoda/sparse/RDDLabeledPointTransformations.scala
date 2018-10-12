@@ -108,11 +108,6 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
         columnsMap, oldNewColumnIndexMap, allowRowCountChange
       )
 
-
-      //logger.trace(" newRowsMap "+newRowsMap.mkString("\n"))
-
-
-
       logger.debug(columnsMap.keySet.mkString(", "))
       val dataArray: Array[(LabeledPoint, Int, String)] = newRowsMap.map
       {
@@ -142,10 +137,6 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
                 )
               }
           }
-
-
-          logger.debug(indices.toArray.mkString("\ni: "))
-          logger.debug(values.toArray.mkString("\nv: "))
           val lp: LabeledPoint = newLabeledPoint(label, maxColumnIdx, indices.toArray, values.toArray)
 
 
