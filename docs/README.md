@@ -34,6 +34,6 @@ The main function of ikodaSparse is to manipulate large sparse data.
 
 
 ### <a href="https://github.com/amerywu/ikodaSparse/wiki">See Simple Guide to ikodaSparse for details</a>
-
+##### <a href="./scaladocs/index.html">ikodaSparse API</a>
 
 
