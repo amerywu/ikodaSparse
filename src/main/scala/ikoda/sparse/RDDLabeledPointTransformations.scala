@@ -16,9 +16,25 @@ import scala.collection.immutable.{ListMap, SortedMap, TreeMap}
 import scala.collection.mutable.{ArrayBuffer, HashMap, ListBuffer}
 import scala.collection.{breakOut, immutable, mutable}
 
+/**
+  * @groupname dp Data Attributes
+  * @groupname load Loading and Saving
+  * @groupname cpt Data Computation
+  * @groupname man Data Manipulation
+  *
+  *
+  * @param ilp
+  */
 class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(ilp)
 {
 
+  /**
+    *
+    * @param colIndices
+    * @param colValues
+    * @throws ikoda.IKodaMLException
+    * @return
+    */
   @throws(classOf[IKodaMLException])
   private [sparse] def internalSortColumns(colIndices:Seq[Int],colValues:Seq[Double]): Tuple2[Seq[Int],Seq[Double]] =
   {
@@ -63,16 +79,20 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
     }
   }
 
-  def newLabeledPoint(label:Double, indices:Array[Int], values:Array[Double]): LabeledPoint =
+  private [sparse] def newLabeledPoint(label:Double, indices:Array[Int], values:Array[Double]): LabeledPoint =
   {
-    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(getColumnMaxIndex+1,indices,values))
+    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(columnMaxIndex+1,indices,values))
   }
 
-  def newLabeledPoint(label:Double,  featureCount:Int,indices:Array[Int], values:Array[Double]): LabeledPoint =
+  private [sparse] def newLabeledPoint(label:Double,  featureCount:Int,indices:Array[Int], values:Array[Double]): LabeledPoint =
   {
     new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(featureCount,indices,values))
   }
 
+  /**
+    * @group man
+    * @return
+    */
   def transformRDDToDataFrame(): DataFrame =
   {
     val sqlContext = spark.sqlContext
@@ -82,7 +102,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
   @throws(classOf[IKodaMLException])
-  def transformColumnsMapToLabeledPointRDD(
+  private [sparse] def transformColumnsMapToLabeledPointRDD(
                                           spark: SparkSession,
                                           columnsMap: Map[Int, Seq[CellTuple]],
                                           oldNewColumnIndexMap: Map[Int, Int] = HashMap[Int, Int]().toMap,
@@ -101,7 +121,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
           logger.debug("max column set to "+maxColumnIdxo.get)
           maxColumnIdxo.get
 
-        case false => getColumnMaxIndex
+        case false => columnMaxIndex
       }
 
       val newRowsMap: mutable.HashMap[UUID, mutable.HashMap[Int, CellTuple]] = transformColumnMapToRowMap(
@@ -161,7 +181,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
   @throws(classOf[IKodaMLException])
-  def transformColumnMapToRowMap(
+  private [sparse] def transformColumnMapToRowMap(
                                 columnsMap: Map[Int, Seq[CellTuple]],
                                 oldNewColumnIndexMap: Map[Int, Int] = mutable.HashMap[Int, Int]().toMap,
                                 allowRowCountChange: Boolean = false
@@ -232,7 +252,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
   @throws(classOf[IKodaMLException])
-  def transformColumnsRddToLabeledPointRDD1(
+  private [sparse] def transformColumnsRddToLabeledPointRDD1(
                                           spark: SparkSession,
                                           columnsRDD: RDD[(Int, Seq[CellTuple])],
                                           oldNewColumnIndexMap: Map[Int, Int]= HashMap[Int, Int]().toMap,
@@ -298,7 +318,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
       var currentMax:Int = -1;
       logger.debug("transformColumnsToThisSchema 3")
-      sparseToConvert.getColumnHeads().foreach
+      sparseToConvert.columnHeads().foreach
       {
         cht=> thisMap.getOrElse(cht.stringLabel,-1) match
         {
@@ -336,13 +356,20 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
   }
 
 
-
+  /**
+    * Matches the label numeric values in sparseToConvert with the labels in this RDDLabeledPoint
+    * @group man
+    * @param sparseToConvert
+    * @param newTargetMap
+    * @throws ikoda.IKodaMLException
+    * @return
+    */
   @throws(classOf[IKodaMLException])
   def transformLabelToThisSchema(sparseToConvert:RDDLabeledPoint,newTargetMap:mutable.HashMap[String,Double]):Map[Double,Double]=
   {
     try
     {
-      var currentMax:Double=this.getTargetMaxValue
+      var currentMax:Double=this.targetMaxValue
       logger.debug("transformLabelToThisSchema 1")
       sparseToConvert.getTargets().map
       {
@@ -368,7 +395,14 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
   }
 
 
-
+  /**
+    * Converts from ikoda.utils.CsvSpreadheet to RDDLabeledPoint
+    * @group man
+    * @param spark
+    * @param libsvmProcessor
+    * @throws ikoda.IKodaMLException
+    * @return
+    */
   @throws(classOf[IKodaMLException])
   def transformLibSvmProcessorToRDDLabeledPoint(spark: SparkSession, libsvmProcessor: LibSvmProcessor): RDDLabeledPoint =
   {
@@ -428,8 +462,9 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
 
+
   @throws(classOf[IKodaMLException])
-  def transformRowToLabeledPoint(rowIn: Row, fieldNameSeq: Seq[String], targetColumnName: String, totalColCount:Int): Option[LabeledPoint] =
+  private [sparse] def transformRowToLabeledPoint(rowIn: Row, fieldNameSeq: Seq[String], targetColumnName: String, totalColCount:Int): Option[LabeledPoint] =
   {
     try
     {
@@ -483,6 +518,16 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
     }
   }
 
+
+  /**
+    * Converts from ikoda.utils.CsvSpreadheet to RDDLabeledPoint while mainatining the row indices and label indices of this RDDLabeledPoint
+    * @group man
+    *
+    *
+    * @param libsvmProcessor
+    * @throws ikoda.IKodaMLException
+    * @return
+    */
 
 
   @throws(classOf[IKodaMLException])
@@ -544,9 +589,13 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
   }
 
 
-
-
-
+  /**
+    * Converts sparseToConvert so that column and label indices match this
+    * @group man
+    * @param sparseToConvert
+    * @throws ikoda.IKodaMLException
+    * @return
+    */
   @throws(classOf[IKodaMLException])
   def transformToRDDLabeledPointWithSchemaMatchingThis(sparseToConvert: RDDLabeledPoint)
   : Option[RDDLabeledPoint] =
@@ -604,7 +653,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
           val newRDDLP = new RDDLabeledPoint(lpRDD, newColumnHeadMap, newTargetMap.toMap, ilp.name)
-          val offset=newRDDLP.getColumnCount-sparseToConvert.getColumnCount
+          val offset=newRDDLP.columnCount-sparseToConvert.columnCount
           if(offset>0) {
             newRDDLP.columnCountOffset =offset
           }
@@ -640,7 +689,7 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
 
-  def transformColAsRowRddToTreeMap(colAsRowRdd:RDD[(Int,Seq[CellTuple])]): SortedMap[Int,Seq[CellTuple]] =
+  private [sparse] def transformColAsRowRddToTreeMap(colAsRowRdd:RDD[(Int,Seq[CellTuple])]): SortedMap[Int,Seq[CellTuple]] =
   {
     val tt:TicToc=new TicToc
     logger.trace(tt.tic("transformColAsRowRddToTreeMap"))
@@ -654,13 +703,13 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
 
   @throws(classOf[IKodaMLException])
-  def transformLabeledPointRDDToColumnsRdd(): RDD[(Int,Seq[CellTuple])] =
+  private [sparse] def transformLabeledPointRDDToColumnsRdd(): RDD[(Int,Seq[CellTuple])] =
   {
     transformLabeledPointRDDToColumnsRdd(ilp.dataRDD)
   }
 
   @throws(classOf[IKodaMLException])
-  def transformLabeledPointRDDToColumnsRdd(rddData:RDD[(LabeledPoint,Int,String)]): RDD[(Int,Seq[CellTuple])] =
+  private [sparse]  def transformLabeledPointRDDToColumnsRdd(rddData:RDD[(LabeledPoint,Int,String)]): RDD[(Int,Seq[CellTuple])] =
   {
     try
     {

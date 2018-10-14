@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuite 
-errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="3" time="7.955" timestamp="2018-10-12T13:14:59">
+errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="27" time="12.676" timestamp="2018-10-13T17:14:26">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment">
     </property>
@@ -95,13 +95,85 @@ errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="
     <property name="sun.cpu.isalist" value="amd64"> </property>
   </properties>
   <testcase 
-  name="should convert to term frequency" classname="ikoda.TinyTest" time="7.423">
+  name="Tiny Test should open a libsvm file" classname="ikoda.TinyTest" time="4.886">
 </testcase>
   <testcase 
-  name="should convert to tf-idf" classname="ikoda.TinyTest" time="0.375">
+  name="Tiny Test should reorder columns" classname="ikoda.TinyTest" time="0.544">
 </testcase>
   <testcase 
-  name="should close spark" classname="ikoda.TinyTest" time="0.141">
+  name="Tiny Test should save locally" classname="ikoda.TinyTest" time="0.129">
+</testcase>
+  <testcase 
+  name="Tiny Test should convert to df" classname="ikoda.TinyTest" time="0.408">
+</testcase>
+  <testcase 
+  name="Tiny Test should convert to term frequency" classname="ikoda.TinyTest" time="0.073">
+</testcase>
+  <testcase 
+  name="Tiny Test should convert to tf-idf" classname="ikoda.TinyTest" time="0.299">
+</testcase>
+  <testcase 
+  name="Tiny Test should open locally" classname="ikoda.TinyTest" time="0.41">
+</testcase>
+  <testcase 
+  name="Tiny Test should reset indices" classname="ikoda.TinyTest" time="0.797">
+</testcase>
+  <testcase 
+  name="Tiny Test should find the median value for each row" classname="ikoda.TinyTest" time="0.051">
+</testcase>
+  <testcase 
+  name="Tiny Test should map out" classname="ikoda.TinyTest" time="0.256">
+</testcase>
+  <testcase 
+  name="Tiny Test should add a column in" classname="ikoda.TinyTest" time="0.753">
+</testcase>
+  <testcase 
+  name="Tiny Test should change a label" classname="ikoda.TinyTest" time="0.627">
+</testcase>
+  <testcase 
+  name="Tiny Test should calculate standard deviation for each column" classname="ikoda.TinyTest" time="0.158">
+</testcase>
+  <testcase 
+  name="Tiny Test should sum each column" classname="ikoda.TinyTest" time="0.052">
+</testcase>
+  <testcase 
+  name="Tiny Test should perform an operation on each column" classname="ikoda.TinyTest" time="0.7">
+</testcase>
+  <testcase 
+  name="Tiny Test should aggregate by label" classname="ikoda.TinyTest" time="0.04">
+</testcase>
+  <testcase 
+  name="Tiny Test should even the proportion of columns" classname="ikoda.TinyTest" time="0.56">
+</testcase>
+  <testcase 
+  name="Tiny Test should find rows containing a given column vakue" classname="ikoda.TinyTest" time="0.09">
+</testcase>
+  <testcase 
+  name="Tiny Test should getProportion of Columns that have a non zero value" classname="ikoda.TinyTest" time="0.05">
+</testcase>
+  <testcase 
+  name="Tiny Test should reduce to label by aggregation" classname="ikoda.TinyTest" time="0.133">
+</testcase>
+  <testcase 
+  name="Tiny Test should get a random subset" classname="ikoda.TinyTest" time="0.047">
+</testcase>
+  <testcase 
+  name="Tiny Test should remove columns" classname="ikoda.TinyTest" time="0.083">
+</testcase>
+  <testcase 
+  name="Tiny Test should remove columns distributed" classname="ikoda.TinyTest" time="0.627">
+</testcase>
+  <testcase 
+  name="Tiny Test should merge schemas" classname="ikoda.TinyTest" time="0.43">
+</testcase>
+  <testcase 
+  name="Tiny Test should make hashs" classname="ikoda.TinyTest" time="0.32">
+</testcase>
+  <testcase 
+  name="Tiny Test should convert to ml package lp" classname="ikoda.TinyTest" time="0.03">
+</testcase>
+  <testcase 
+  name="Tiny Test should close spark" classname="ikoda.TinyTest" time="0.11">
 </testcase>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

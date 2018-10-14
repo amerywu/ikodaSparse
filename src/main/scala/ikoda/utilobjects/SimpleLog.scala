@@ -9,20 +9,20 @@ import grizzled.slf4j.Logging
 
 trait SimpleLog extends Logging
 {
-  
 
-  
-  var logFile: String = new File(".").getCanonicalPath
-  val startTime:Long=System.currentTimeMillis()
-  
-  def initSimpleLog(path: String, fileName: String): Unit =
+
+
+  protected var logFile: String = new File(".").getCanonicalPath
+  protected val startTime:Long=System.currentTimeMillis()
+
+  protected def initSimpleLog(path: String, fileName: String): Unit =
   {
     logFile = path + File.separator + fileName
     
     val dir: better.files.File = path.toFile.createIfNotExists(true, true)
   }
-  
-  def timestamp(line:String): String=
+
+  protected def timestamp(line:String): String=
   {
     line.replace("\n","").trim.startsWith("**") match
       {
@@ -37,7 +37,7 @@ trait SimpleLog extends Logging
   }
 
 
-  def newBlock(line:String): String =
+  protected def newBlock(line:String): String =
   {
     line.startsWith("**") match
       {
@@ -46,7 +46,7 @@ trait SimpleLog extends Logging
     }
   }
 
-  def    addLine(line: String): Unit =
+  protected  def    addLine(line: String): Unit =
   {
     
     try
@@ -89,9 +89,9 @@ trait SimpleLog extends Logging
     
     
   }
-  
-  
-  def clearLogFile(): Unit =
+
+
+  protected  def clearLogFile(): Unit =
   {
     if (new File(logFile).exists())
     {

@@ -182,7 +182,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
   def saveLocalTest(): Unit =
   {
     logger.debug("saveLocalTest ")
-    RDDLabeledPoint.printSparseLocally(sparse,"savedLocal",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput")
+    RDDLabeledPoint.printSparseLocally(sparse,"savedLocal",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput",5)
     logger.debug("saved\n")
   }
 
@@ -214,13 +214,13 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
   def resetIndicesTest(): Unit =
   {
     logger.debug("loadLocalTest ")
-    val sparse1=sparse.loadLibSvmLocal(s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput${File.separator}savedLocal")
+    val sparse1=RDDLabeledPoint.loadLibSvmLocal(s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput${File.separator}savedLocal").get
     logger.debug("loadLocalTest\n"+sparse1.info())
     val sparse2=RDDLabeledPoint.removeColumnsDistributed(sparse1,Set(1,3,5))
     val sparse3=RDDLabeledPoint.resetColumnIndices(sparse2.get).get
     RDDLabeledPoint.printSparseLocally(sparse3,"savedLocalReset",s"${new File(".").getAbsolutePath}${File.separator}unitTestOutput")
     var colIdx=0
-    sparse3.getColumnHeads()
+    sparse3.columnHeads()
   }
 
 
@@ -321,7 +321,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
     logger.debug(tt.toc("copy sparse"))
 
     logger.debug(tt.tic("addColumnTest"))
-    val colIndex = sparse1.getColumnCount
+    val colIndex = sparse1.columnCount
 
 
     val rowids = sparse1.getRowIdAndLabel
@@ -383,7 +383,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
 
 
       val sparse1 = sparse.copy()
-      val colIndex = sparse1.getColumnCount
+      val colIndex = sparse1.columnCount
       val rowids = sparse1.getRowIdAndLabel
       val rnd = scala.util.Random
       val col: Seq[CellTuple] = rowids.zipWithIndex.map
@@ -635,7 +635,7 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
       q += 4
       q += 0
       q += 2
-      val sparseOut = RDDLabeledPoint.removeColumns(sparse1,q).get
+      val sparseOut = RDDLabeledPoint.removeColumnsCollected(sparse1,q).get
       logger.debug(tt.toc("\n+++++++++++++++\nremoveColumns\n+++++++++++++++\n"))
       logger.debug(sparseOut.info)
       logger.debug("resu1t size: " + sparseOut.rowCount)
@@ -706,20 +706,20 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
 
       logger.debug(sparse1.info)
       logger.debug(sparse2.info)
-      logger.debug("sparse1 Column Heads\n"+sparse1.getColumnHeads().mkString("\n"))
-      logger.debug("sparse2 Column Heads\n"+sparse2.getColumnHeads().mkString(" \n --"))
+      logger.debug("sparse1 Column Heads\n"+sparse1.columnHeads().mkString("\n"))
+      logger.debug("sparse2 Column Heads\n"+sparse2.columnHeads().mkString(" \n --"))
       val sparseOut = sparse1.transformToRDDLabeledPointWithSchemaMatchingThis(sparse2).get
       logger.debug(tt.toc("\n+++++++++++++++\nmergeSchemas\n+++++++++++++++\n"))
       logger.debug(sparseOut.info)
       logger.debug("sparseOut resu1t size: " + sparseOut.rowCount)
 
-      logger.debug("sparseOut Column Heads\n"+sparseOut.getColumnHeads().mkString("\n"))
+      logger.debug("sparseOut Column Heads\n"+sparseOut.columnHeads().mkString("\n"))
       logger.debug("sparseOut Targets\n"+sparseOut.getTargets().mkString("\n"))
       logger.debug(tt.tic("\n+++++++++++++++\nmergeSchemas1\n+++++++++++++++\n"))
       assert(sparseOut.getColumnIndex("z3")==11)
       val q = new mutable.Queue[Int]()
       q += sparseOut.getColumnIndex("col7")
-      RDDLabeledPoint.removeColumns(sparseOut,q)
+      RDDLabeledPoint.removeColumnsCollected(sparseOut,q)
       logger.debug(tt.toc("\n+++++++++++++++\nmergeSchemas1\n+++++++++++++++\n"))
 
 
@@ -788,14 +788,14 @@ class TinyTest extends FlatSpec with Logging with SparkConfProviderWithStreaming
 
       logger.debug(sparse1.info)
 
-      logger.debug("sparse1 Column Heads\n"+sparse1.getColumnHeads().mkString("\n"))
+      logger.debug("sparse1 Column Heads\n"+sparse1.columnHeads().mkString("\n"))
       logger.debug("sparse2 Column Heads\n"+Spreadsheet.getInstance().getLibSvmProcessor("sparse2").getColumnHeadings)
       val sparseOut = sparse1.transformToRDDLabeledPointWithSchemaMatchingThis(Spreadsheet.getInstance().getLibSvmProcessor("sparse2"))
       logger.debug(tt.toc("mergeSchemas"))
       logger.debug(sparseOut.info)
       logger.debug("sparseOut resu1t size: " + sparseOut.rowCount)
 
-      logger.debug("sparseOut Column Heads"+sparseOut.getColumnHeads().mkString("\n"))
+      logger.debug("sparseOut Column Heads"+sparseOut.columnHeads().mkString("\n"))
       assert(sparseOut.getColumnIndex("col7")==8)
 
 

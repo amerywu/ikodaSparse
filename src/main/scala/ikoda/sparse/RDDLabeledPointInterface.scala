@@ -40,7 +40,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       mutableColumnMap.put(colIndex, newCol)
 
       val maxCol=newColumnMap.keySet.max+1
-      logger.debug(getColumnHeads().mkString("\n"))
+      logger.debug(columnHeads().mkString("\n"))
       logger.debug(newColumnMap.mkString("\n"))
 
 
@@ -207,7 +207,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       val mapOfColumns: RDD[(Int, Seq[CellTuple])] = transformLabeledPointRDDToColumnsRdd()
       val sb: StringBuilder = new StringBuilder
 
-      val colCount: Int = getColumnCount
+      val colCount: Int = columnCount
       val rCount: Double = 1.0
       val rowCount = rCount.toInt
       mapOfColumns.map
@@ -323,14 +323,6 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
         }
       }
 
-
-      if (rowCountEstimate != colSums.size)
-      {
-        logger.warn(
-          "WARNING: soInverseDocumentFrequency the rdd column count does not equal the constants " +
-            "columns count."
-        )
-      }
       val rddOfNewColumns:RDD[(Int,Seq[CellTuple])]=rddColAsRow.map
       {
         case (colidx,seqCellTuple) =>
@@ -407,8 +399,6 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
 
       val newLpRDD:RDD[(LabeledPoint,Int,String)]=spark.sparkContext.parallelize(newLpArray).map(lp=> (lp,lpHash(lp),createUUID.toString))
       new RDDLabeledPoint(newLpRDD,copyColumnMap,copyTargetMap,ilp.name)
-
-
     }
     catch
       {
@@ -419,33 +409,23 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       }
   }
 
-
-
-
-
-
-
   @throws(classOf[IKodaMLException])
   private [sparse] def soCountRowsByTargetCollected(): Map[Double,Int] =
   {
     try
     {
-
       val rdd1:RDD[(Double,Int)]=ilp.dataRDD.map
       {
         case (r) => (r._1.label,1)
       }
       rdd1.groupBy(e=>e._1).map(e=> (e._1,e._2.toSeq.length)).collectAsMap().toMap
-
     }
     catch
     {
-
       case e: Exception =>
         logger.error("soCountRowsByTargetCollected " + e.getMessage, e)
         throw IKodaMLException(e.getMessage, e)
     }
-
   }
 
   @throws(classOf[IKodaMLException])
@@ -466,7 +446,6 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
       }
       else
       {
-
         val updatedLpByLabelArray: ArrayBuffer[(LabeledPoint, Int, String)] = new ArrayBuffer[(LabeledPoint, Int,
           String)]()
 
@@ -489,12 +468,10 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
         newlabelmap.put("OTHER", otherLabel)
         val newRDD: RDD[(LabeledPoint, Int, String)] = spark.sparkContext.parallelize(updatedLpByLabelArray)
         Some(new RDDLabeledPoint(newRDD,copyColumnMap,newlabelmap.toMap,ilp.name))
-
       }
     }
     catch
     {
-
       case e: Exception =>
         logger.error(s"${ilp.name}", e)
         throw IKodaMLException(e.getMessage, e)
@@ -863,6 +840,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
   private [sparse] def soRemoveColumnsDistributed( columnIndices: Set[Int],failOnError:Boolean): RDDLabeledPoint =
   {
 
+    logger.info(s"Removing ${columnIndices.size} columns")
     columnIndices.size match {
 
       case x if(x>0) => internalRemoveColumns2 (columnIndices,failOnError)
@@ -1175,13 +1153,13 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
   {
     try
     {
-      logger.debug(s"Column Count in sparse0 is ${getColumnCount}")
-      logger.debug(s"Column Count in sparse1 is ${sparse1.getColumnCount}")
-      require(getColumnCount==sparse1.getColumnCount)
+      logger.debug(s"Column Count in sparse0 is ${columnCount}")
+      logger.debug(s"Column Count in sparse1 is ${sparse1.columnCount}")
+      require(columnCount==sparse1.columnCount)
 
       var  pass:Boolean = false
 
-      var colIndex:Int=sparse1.getColumnCount-4
+      var colIndex:Int=sparse1.columnCount-4
 
       logger.debug( s"sparse0: ${getColumnName(colIndex)} \n      " +
         s"sparse1: ${getColumnName(colIndex)} \n      " +
@@ -1202,7 +1180,7 @@ class RDDLabeledPointInterface(ilp:LpData) extends RDDLabeledPointInternalOperat
 
 
 
-      colIndex=sparse1.getColumnCount/2
+      colIndex=sparse1.columnCount/2
 
       logger.debug( s"sparse0: ${getColumnName(colIndex)} \n      " +
         s"sparse1: ${getColumnName(colIndex)} \n      " +

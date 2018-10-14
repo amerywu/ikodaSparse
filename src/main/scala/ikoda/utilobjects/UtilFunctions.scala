@@ -13,18 +13,26 @@ import scala.util.Try
 trait UtilFunctions extends Logging
 {
   @throws(classOf[IKodaMLException])
-   def getOrThrow(so:Option[RDDLabeledPoint]):RDDLabeledPoint=
+  protected   def getOrThrow(so:Option[RDDLabeledPoint]):RDDLabeledPoint=
   {
     so.getOrElse(throw new IKodaMLException("Failed"))
   }
-  def stackTraceString(e:Throwable):String=
+
+
+  @throws(classOf[IKodaMLException])
+  protected   def getOrThrow(so:Try[RDDLabeledPoint]):RDDLabeledPoint=
+  {
+    so.getOrElse(throw new IKodaMLException("Failed"))
+  }
+
+  protected def stackTraceString(e:Throwable):String=
   {
     val sw = new StringWriter
     e.printStackTrace(new PrintWriter(sw))
     sw.toString
   }
 
-   def printLocal(path:String,text:String): Unit =
+  protected   def printLocal(path:String,text:String): Unit =
   {
     try
     {
@@ -45,7 +53,7 @@ trait UtilFunctions extends Logging
   }
 
   @throws
-  def breakPathToDirAndFile(path: String): (String, String) =
+  protected def breakPathToDirAndFile(path: String): (String, String) =
   {
     try
     {
@@ -59,7 +67,7 @@ trait UtilFunctions extends Logging
     }
   }
 
-  def getListOfSubDirectories(dir: String): List[String] =
+  protected def getListOfSubDirectories(dir: String): List[String] =
   {
     val d = new File(dir)
     if (d.exists && d.isDirectory)
@@ -72,7 +80,7 @@ trait UtilFunctions extends Logging
     }
   }
 
-  def getListOfSubDirectoriesOlderThan(dir: String, age: Long): List[String] =
+  protected def getListOfSubDirectoriesOlderThan(dir: String, age: Long): List[String] =
   {
     val d = new File(dir)
     if (d.exists && d.isDirectory)
@@ -87,7 +95,7 @@ trait UtilFunctions extends Logging
   }
 
 
-  def getListOfFiles(dir: String): List[String] =
+  protected def getListOfFiles(dir: String): List[String] =
   {
     val d = new File(dir)
     if (d.exists && d.isDirectory)
@@ -100,7 +108,7 @@ trait UtilFunctions extends Logging
     }
   }
 
-  def showMemoryUsage: Unit =
+  protected  def showMemoryUsage: Unit =
   {
 
     val mb = 1024 * 1024
@@ -116,7 +124,7 @@ trait UtilFunctions extends Logging
   }
 
 
-  def showMemoryUsage(name: String): Unit =
+  protected  def showMemoryUsage(name: String): Unit =
   {
     val mb = 1024 * 1024
     val runtime = Runtime.getRuntime
@@ -133,7 +141,7 @@ trait UtilFunctions extends Logging
   }
 
 
-  def extractDouble(expectedNumber: Any): Option[Double] =
+  protected def extractDouble(expectedNumber: Any): Option[Double] =
   {
 
     try
@@ -158,7 +166,7 @@ trait UtilFunctions extends Logging
 
 
 
-  def stripDecimalPlace(s: Option[String]): String =
+  protected def stripDecimalPlace(s: Option[String]): String =
   {
     if (s.nonEmpty)
     {
@@ -176,7 +184,7 @@ trait UtilFunctions extends Logging
     }
   }
 
-   def keySpaceCleanName(keySpaceName: String): Option[String] =
+  protected def keySpaceCleanName(keySpaceName: String): Option[String] =
   {
     val keySpaceNameo = Option(keySpaceName)
     if (keySpaceNameo.isDefined)
@@ -192,7 +200,7 @@ trait UtilFunctions extends Logging
 
 
 
-  def extractLong(expectedNumber: Any): Option[Long] = expectedNumber match
+  protected def extractLong(expectedNumber: Any): Option[Long] = expectedNumber match
   {
     case i: Int => Some(i.toLong)
     case l: Long => Some(l)
@@ -201,7 +209,7 @@ trait UtilFunctions extends Logging
     case _ => None
   }
 
-  def extractString(expectedString: Any): Option[String] = expectedString match
+  protected def extractString(expectedString: Any): Option[String] = expectedString match
   {
     case i: Int => Some(i.toString)
     case l: Long => Some(l.toString)
@@ -211,14 +219,14 @@ trait UtilFunctions extends Logging
     case _ => Some(expectedString.toString)
   }
 
-  def sum[T: Numeric](x: List[T]): T =
+  protected def sum[T: Numeric](x: List[T]): T =
   {
     if (x.isEmpty) implicitly[Numeric[T]].zero
     else implicitly[Numeric[T]].plus(x.head, sum(x.tail))
   }
 
 
-  def printHashMapToCsv(m:Map[String,String],name:String, path:String): Unit =
+  protected def printHashMapToCsv(m:Map[String,String],name:String, path:String): Unit =
   {
     Spreadsheet.getInstance().initCsvSpreadsheet(name,path)
     m.foreach

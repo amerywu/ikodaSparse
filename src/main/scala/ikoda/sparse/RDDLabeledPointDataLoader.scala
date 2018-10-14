@@ -14,6 +14,15 @@ import org.apache.spark.sql.Dataset
 import scala.collection.mutable
 import scala.util.Try
 
+/**
+  * @groupname dp Data Attributes
+  * @groupname load Loading and Saving
+  * @groupname cpt Data Computation
+  * @groupname man Data Manipulation
+  *
+  *
+  * @param ilp
+  */
 class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformations(ilp)
 {
 
@@ -74,7 +83,7 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
 
 
   @throws(classOf[Exception])
-  def loadLibSvm(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
+  private [sparse] def loadLibSvm(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
   {
     try
     {
@@ -105,7 +114,7 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
 
 
       val sparseout=new RDDLabeledPoint(newdata,newcolheads,newtargetmap,name)
-logger.info(sparseout.info())
+      logger.info(sparseout.info())
       if(validateColumns) {
         sparseout.validateColumnCount
       }
@@ -122,7 +131,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  private [sparse] def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
   {
     try
     {
@@ -149,16 +158,16 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmFromHelper1(data:Dataset[LabeledPoint], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  private [sparse] def loadLibSvmFromHelper1(data:RDD[LabeledPoint], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
   {
     try
     {
-      val newData=data.rdd
+
       val name=datasetName
       logger.info("Loading Target Map.")
       val newtargets=targets
 
-      val dd:RDD[(LabeledPoint,Int,String)]=data.rdd.map{lp =>
+      val dd:RDD[(LabeledPoint,Int,String)]=data.map{lp =>
         (lp,
           s"${lp.label}${lp.features.toSparse.indices}${lp.features.toSparse.values}".hashCode,
           createUUID().toString)}
@@ -183,7 +192,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmSchemaFromHelper1(columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String): RDDLabeledPoint =
+  private [sparse] def loadLibSvmSchemaFromHelper1(columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String): RDDLabeledPoint =
   {
     try
     {
@@ -226,7 +235,7 @@ logger.info(sparseout.info())
 
 
 
-  def truncateFilename(fn:String):String=
+  private [sparse] def truncateFilename(fn:String):String=
   {
     if (fn.toUpperCase.endsWith(".TXT"))
     {
@@ -245,7 +254,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmLocal(inpth: String, validateColumns:Boolean=true): RDDLabeledPoint =
+  private [sparse] def loadLibSvmLocal(inpth: String, validateColumns:Boolean=true): RDDLabeledPoint =
   {
     try
     {
@@ -291,7 +300,7 @@ logger.info(sparseout.info())
   }
 
   @throws(classOf[Exception])
-  def loadSchemaLocal(inpth: String): RDDLabeledPoint =
+  private [sparse] def loadSchemaLocal(inpth: String): RDDLabeledPoint =
   {
     try
     {
@@ -322,7 +331,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadSchema1( fileName: String, path: String): RDDLabeledPoint =
+  private [sparse] def loadSchema1( fileName: String, path: String): RDDLabeledPoint =
   {
     try
     {
