@@ -131,7 +131,7 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
 
 
   @throws(classOf[Exception])
-  private [sparse] def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  private [sparse] def  loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
   {
     try
     {

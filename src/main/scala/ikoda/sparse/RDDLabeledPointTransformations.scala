@@ -15,6 +15,7 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.{ListMap, SortedMap, TreeMap}
 import scala.collection.mutable.{ArrayBuffer, HashMap, ListBuffer}
 import scala.collection.{breakOut, immutable, mutable}
+import scala.util.Try
 
 /**
   * @groupname dp Data Attributes
@@ -81,12 +82,24 @@ class RDDLabeledPointTransformations(ilp:LpData) extends RDDLabeledPointParent(i
 
   private [sparse] def newLabeledPoint(label:Double, indices:Array[Int], values:Array[Double]): LabeledPoint =
   {
-    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(columnMaxIndex+1,indices,values))
+     val t= Try(new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(columnMaxIndex+1,indices,values)))
+    t.isSuccess match
+      {
+      case true => t.get
+      case false =>  val r=internalSortColumns(indices.toSeq,values.toSeq)
+        new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(columnMaxIndex+1,r._1.toArray,r._2.toArray))
+    }
   }
 
   private [sparse] def newLabeledPoint(label:Double,  featureCount:Int,indices:Array[Int], values:Array[Double]): LabeledPoint =
   {
-    new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(featureCount,indices,values))
+    val t=Try(new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(featureCount,indices,values)))
+    t.isSuccess match
+    {
+      case true => t.get
+      case false =>  val r=internalSortColumns(indices.toSeq,values.toSeq)
+        new LabeledPoint(label,org.apache.spark.ml.linalg.Vectors.sparse(columnMaxIndex+1,r._1.toArray,r._2.toArray))
+    }
   }
 
   /**

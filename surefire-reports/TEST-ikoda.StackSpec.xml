@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuite 
-errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.StackSpec" tests="2" time="0.0" timestamp="2018-10-13T17:14:39">
+errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.StackSpec" tests="2" time="0.003" timestamp="2018-10-13T19:20:25">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment">
     </property>
@@ -95,7 +95,7 @@ errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.StackSpec" tests=
     <property name="sun.cpu.isalist" value="amd64"> </property>
   </properties>
   <testcase 
-  name="A Stack should pop values in last-in-first-out order" classname="ikoda.StackSpec" time="0.0">
+  name="A Stack should pop values in last-in-first-out order" classname="ikoda.StackSpec" time="0.003">
 </testcase>
   <testcase 
   name="A Stack should throw NoSuchElementException if an empty stack is popped" classname="ikoda.StackSpec" time="0.0">

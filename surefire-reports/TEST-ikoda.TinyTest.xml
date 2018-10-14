@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <testsuite 
-errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="27" time="12.676" timestamp="2018-10-13T17:14:26">
+errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="27" time="13.0" timestamp="2018-10-13T19:20:12">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment">
     </property>
@@ -95,85 +95,85 @@ errors="0" failures="0" hostname="DESKTOP-V7S0124" name="ikoda.TinyTest" tests="
     <property name="sun.cpu.isalist" value="amd64"> </property>
   </properties>
   <testcase 
-  name="Tiny Test should open a libsvm file" classname="ikoda.TinyTest" time="4.886">
+  name="Tiny Test should open a libsvm file" classname="ikoda.TinyTest" time="4.913">
 </testcase>
   <testcase 
-  name="Tiny Test should reorder columns" classname="ikoda.TinyTest" time="0.544">
+  name="Tiny Test should reorder columns" classname="ikoda.TinyTest" time="0.541">
 </testcase>
   <testcase 
-  name="Tiny Test should save locally" classname="ikoda.TinyTest" time="0.129">
+  name="Tiny Test should save locally" classname="ikoda.TinyTest" time="0.158">
 </testcase>
   <testcase 
-  name="Tiny Test should convert to df" classname="ikoda.TinyTest" time="0.408">
+  name="Tiny Test should convert to df" classname="ikoda.TinyTest" time="0.372">
 </testcase>
   <testcase 
-  name="Tiny Test should convert to term frequency" classname="ikoda.TinyTest" time="0.073">
+  name="Tiny Test should convert to term frequency" classname="ikoda.TinyTest" time="0.07">
 </testcase>
   <testcase 
-  name="Tiny Test should convert to tf-idf" classname="ikoda.TinyTest" time="0.299">
+  name="Tiny Test should convert to tf-idf" classname="ikoda.TinyTest" time="0.29">
 </testcase>
   <testcase 
-  name="Tiny Test should open locally" classname="ikoda.TinyTest" time="0.41">
+  name="Tiny Test should open locally" classname="ikoda.TinyTest" time="0.444">
 </testcase>
   <testcase 
-  name="Tiny Test should reset indices" classname="ikoda.TinyTest" time="0.797">
+  name="Tiny Test should reset indices" classname="ikoda.TinyTest" time="0.837">
 </testcase>
   <testcase 
-  name="Tiny Test should find the median value for each row" classname="ikoda.TinyTest" time="0.051">
+  name="Tiny Test should find the median value for each row" classname="ikoda.TinyTest" time="0.052">
 </testcase>
   <testcase 
-  name="Tiny Test should map out" classname="ikoda.TinyTest" time="0.256">
+  name="Tiny Test should map out" classname="ikoda.TinyTest" time="0.255">
 </testcase>
   <testcase 
-  name="Tiny Test should add a column in" classname="ikoda.TinyTest" time="0.753">
+  name="Tiny Test should add a column in" classname="ikoda.TinyTest" time="0.792">
 </testcase>
   <testcase 
-  name="Tiny Test should change a label" classname="ikoda.TinyTest" time="0.627">
+  name="Tiny Test should change a label" classname="ikoda.TinyTest" time="0.6">
 </testcase>
   <testcase 
-  name="Tiny Test should calculate standard deviation for each column" classname="ikoda.TinyTest" time="0.158">
+  name="Tiny Test should calculate standard deviation for each column" classname="ikoda.TinyTest" time="0.18">
 </testcase>
   <testcase 
-  name="Tiny Test should sum each column" classname="ikoda.TinyTest" time="0.052">
+  name="Tiny Test should sum each column" classname="ikoda.TinyTest" time="0.05">
 </testcase>
   <testcase 
-  name="Tiny Test should perform an operation on each column" classname="ikoda.TinyTest" time="0.7">
+  name="Tiny Test should perform an operation on each column" classname="ikoda.TinyTest" time="0.69">
 </testcase>
   <testcase 
   name="Tiny Test should aggregate by label" classname="ikoda.TinyTest" time="0.04">
 </testcase>
   <testcase 
-  name="Tiny Test should even the proportion of columns" classname="ikoda.TinyTest" time="0.56">
+  name="Tiny Test should even the proportion of columns" classname="ikoda.TinyTest" time="0.53">
 </testcase>
   <testcase 
-  name="Tiny Test should find rows containing a given column vakue" classname="ikoda.TinyTest" time="0.09">
+  name="Tiny Test should find rows containing a given column vakue" classname="ikoda.TinyTest" time="0.092">
 </testcase>
   <testcase 
-  name="Tiny Test should getProportion of Columns that have a non zero value" classname="ikoda.TinyTest" time="0.05">
+  name="Tiny Test should getProportion of Columns that have a non zero value" classname="ikoda.TinyTest" time="0.047">
 </testcase>
   <testcase 
-  name="Tiny Test should reduce to label by aggregation" classname="ikoda.TinyTest" time="0.133">
+  name="Tiny Test should reduce to label by aggregation" classname="ikoda.TinyTest" time="0.131">
 </testcase>
   <testcase 
-  name="Tiny Test should get a random subset" classname="ikoda.TinyTest" time="0.047">
+  name="Tiny Test should get a random subset" classname="ikoda.TinyTest" time="0.037">
 </testcase>
   <testcase 
-  name="Tiny Test should remove columns" classname="ikoda.TinyTest" time="0.083">
+  name="Tiny Test should remove columns" classname="ikoda.TinyTest" time="0.077">
 </testcase>
   <testcase 
-  name="Tiny Test should remove columns distributed" classname="ikoda.TinyTest" time="0.627">
+  name="Tiny Test should remove columns distributed" classname="ikoda.TinyTest" time="0.77">
 </testcase>
   <testcase 
-  name="Tiny Test should merge schemas" classname="ikoda.TinyTest" time="0.43">
+  name="Tiny Test should merge schemas" classname="ikoda.TinyTest" time="0.449">
 </testcase>
   <testcase 
-  name="Tiny Test should make hashs" classname="ikoda.TinyTest" time="0.32">
+  name="Tiny Test should make hashs" classname="ikoda.TinyTest" time="0.371">
 </testcase>
   <testcase 
-  name="Tiny Test should convert to ml package lp" classname="ikoda.TinyTest" time="0.03">
+  name="Tiny Test should convert to ml package lp" classname="ikoda.TinyTest" time="0.029">
 </testcase>
   <testcase 
-  name="Tiny Test should close spark" classname="ikoda.TinyTest" time="0.11">
+  name="Tiny Test should close spark" classname="ikoda.TinyTest" time="0.151">
 </testcase>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
