@@ -11,25 +11,25 @@ class LpData(dataRDDo: Option[RDD[(LabeledPoint,Int,String)]], columnHeadMapo: O
 {
 
 
-  lazy val dataRDD:RDD[(LabeledPoint,Int,String)] =
+  private[sparse] lazy val dataRDD:RDD[(LabeledPoint,Int,String)] =
     dataRDDo.isDefined match {
       case true=>dataRDDo.get
       case false => SparkSession.getActiveSession.get.sparkContext.emptyRDD[(LabeledPoint,Int,String)]
     }
-  lazy val  columnHeadMap:mutable.ListMap[Int, ColumnHeadTuple]=
+  private[sparse] lazy val  columnHeadMap:mutable.ListMap[Int, ColumnHeadTuple]=
     columnHeadMapo.isDefined match
   {
       case true=> columnHeadMapo.get
       case false=> new mutable.ListMap[Int, ColumnHeadTuple]()
     }
-  lazy val targetMap:Map[String,Double]=
+  private[sparse] lazy val targetMap:Map[String,Double]=
     targetmapo.isDefined match
       {
       case true => targetmapo.get
       case false => new mutable.HashMap[String,Double]().toMap
     }
 
-  lazy val name:String=
+  private[sparse] lazy val name:String=
     nameo.isDefined match
       {
       case true => nameo.get

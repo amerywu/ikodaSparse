@@ -202,7 +202,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
     try
     {
       val newColumnHeadMap=copyColumnMap
-      val newColIndex: Int = getColumnCount
+      val newColIndex: Int = columnMaxIndex+1
       val cht: ColumnHeadTuple = ColumnHeadTuple(newColIndex, colName)
       if(newColumnHeadMap.get(newColIndex).isEmpty)
       {
@@ -382,7 +382,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   {
     try
     {
-      logger.debug(s"sparseOperationRemoveRowsByLabels RDD started with (estimated) ${getRowCountEstimate()} rows")
+      logger.debug(s"sparseOperationRemoveRowsByLabels RDD started with (estimated) ${rowCountEstimate} rows")
       logger.debug(s"sparseOperationRemoveRowsByLabels Removing labels: ${labelsToRemove.mkString(", ")}")
       val tempRDD: RDD[(LabeledPoint, Int, String)] = ilp.dataRDD.filter(r => !labelsToRemove.contains(r._1.label))
 
@@ -412,13 +412,13 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   {
     try
     {
-      logger.debug(s"internalRemoveRowsByHashcode RDD started with (estimated) ${getRowCountEstimate()} rows")
+      logger.debug(s"internalRemoveRowsByHashcode RDD started with (estimated) ${rowCountEstimate} rows")
       logger.debug(s"internalRemoveRowsByHashcode Removing labels: ${hashcodesToRemove.mkString(", ")}")
       val tempRDD: RDD[(LabeledPoint, Int, String)] = ilp.dataRDD.filter(r => !hashcodesToRemove.contains(r._2))
 
 
       val sparseOut= new RDDLabeledPoint(tempRDD,copyColumnMap,copyTargetMap,getName())
-      logger.debug(s"internalRemoveRowsByHashcode RDD ended with (estimated) ${sparseOut.getRowCountEstimate()} rows")
+      logger.debug(s"internalRemoveRowsByHashcode RDD ended with (estimated) ${sparseOut.rowCountEstimate} rows")
 
       logger.info(sparseOut.info)
       sparseOut
@@ -824,7 +824,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       }
   }
 
-  def pResetCellTupleSeqColIdx(cellTupSeq:Seq[CellTuple],newidx:Int, oldidx:Int): Seq[CellTuple] =
+  protected def pResetCellTupleSeqColIdx(cellTupSeq:Seq[CellTuple],newidx:Int, oldidx:Int): Seq[CellTuple] =
   {
     cellTupSeq.map{
 
@@ -872,7 +872,8 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
           }"
         )
       }
-      val data = transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap,  allowRowCountChange = true)
+      val maxColIdx=tempColumnHeadMap.keySet.max+1
+      val data = transformColumnsMapToLabeledPointRDD(spark, mutableColumnMap.toMap,  allowRowCountChange = true, maxColumnIdxo=Some(maxColIdx))
 
       logger.debug(s"Original Column Count was $originalColumnCount")
       logger.debug(s"Offset is $columnCountOffset")
@@ -893,7 +894,6 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
           logger.error(e.getMessage,e)
           throw new IKodaMLException(e.getMessage,e)
       }
-
   }
 
 
@@ -947,7 +947,7 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   }
 
 
-  def plowerCaseColumnHeads:RDDLabeledPoint=
+  protected def plowerCaseColumnHeads:RDDLabeledPoint=
     {
           val newcolmap=ilp.columnHeadMap.map
           {
@@ -1013,9 +1013,6 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
         2, colArray, valArray))
       val uuid: String = UUID.randomUUID().toString
       val row: Array[Tuple3[LabeledPoint, Int, String]] = Array(Tuple3(lp, lp.hashCode(), uuid))
-
-
-
       val datadict = immutable.HashMap[String, Double]("xxdummyxx" -> 1.0)
       val columnHeadMap = copyColumnMap
 
@@ -1029,10 +1026,8 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
     }
     catch
     {
-
       case e: Exception =>
       {
-
         logger.error(s"${ilp.name}", e)
         throw IKodaMLException(s"${ilp.name} : ${e.getMessage}", e)
       }
@@ -1056,14 +1051,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       }
       else
       {
-
         throw IKodaMLException(s"Column Index $index cannot exist")
       }
-
     }
     catch
     {
-
       case e: Exception =>
         logger.error(s"Error while trying to remove ${index} which is registered in columnHeadMap as ${Try(ilp.columnHeadMap.get(index))}")
         logger.error(s"${ilp.name}")
@@ -1072,18 +1064,74 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
     }
   }
 
-  def libSVMFileAsString():String= {
+
+
+  private [sparse] def containsDecimalPlaces(rows:Int): Boolean =
+  {
+
+
+    val tfsq:Seq[Boolean] =ilp.dataRDD.take(rows).flatMap
+    {
+      r=> val tfseq:Seq[Boolean]=r._1.features.toSparse.values.map(v=>v % 1 == 0)
+
+        tfseq
+    }
+
+    tfsq.contains(false) match
+    {
+      case true => true
+      case _ =>false
+    }
+
+  }
+
+  private def formatOutput(truncateAt:Int):Boolean=
+  {
+    truncateAt >0 match
+      {
+      case true => containsDecimalPlaces(10)
+
+
+      case false => false
+    }
+  }
+
+  private [sparse] def libSVMFileAsString(truncateAt:Int):String= {
 
     val sparse0=internalCheckColumnOrder()
+    val dp:String=s"%1.${truncateAt}f"
+    logger.debug(dp)
 
-    val rows:Array[String]=sparse0.lpData().map { case LabeledPoint(label, features) =>
-      val sb = new StringBuilder(label.toString)
-      features.foreachActive { case (i, v) =>
-        sb += ' '
-        sb ++= s"${i + 1}:$v"
-      }
-      sb.mkString
-    }.collect()
+    val rows:Array[String]= formatOutput(truncateAt) match
+      {
+      case true=>
+
+        def truncateValue(value:Double):String=
+        {
+            dp.format(value)
+        }
+
+
+        sparse0.lpData().map { case LabeledPoint(label, features) =>
+          val sb = new StringBuilder(label.toString)
+          features.foreachActive { case (i, v) =>
+            sb += ' '
+            sb ++= s"${i + 1}:"+truncateValue(v)
+          }
+          sb.mkString
+        }.collect()
+      case false =>
+        sparse0.lpData().map { case LabeledPoint(label, features) =>
+          val sb = new StringBuilder(label.toString)
+          features.foreachActive { case (i, v) =>
+            sb += ' '
+            sb ++= s"${i + 1}:$v"
+          }
+          sb.mkString
+        }.collect()
+    }
+
+
 
     val sbOut:mutable.StringBuilder=new mutable.StringBuilder()
     rows.foreach(r=>sbOut.append(r + "\n"))
@@ -1091,8 +1139,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   }
 
 
-
-
+  /**
+    * A csv format String textValue/numericValue
+    * @group dp
+    * @return
+    */
   def targetMapAsString(): String =
   {
     try {
@@ -1100,11 +1151,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       val sb:StringBuilder=new mutable.StringBuilder()
       targetMap.foreach
       {
-        e=> sb.append("(")
+        e=>
           sb.append(e._1)
           sb.append(",")
           sb.append(e._2)
-          sb.append(")\n")
+          sb.append("\n")
 
 
       }
@@ -1123,6 +1174,12 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
   }
 
 
+  /**
+    * Returns csv numericLabel,testLabel
+    * @group dp
+    * @param offset
+    * @return
+    */
   def columnMapAsString(offset:Int=1): String =
   {
     try {
@@ -1132,11 +1189,11 @@ class RDDLabeledPointInternalOperations(ilp:LpData) extends RDDLabeledPointDataL
       val sb:StringBuilder=new mutable.StringBuilder()
       colMap.foreach
       {
-        case (idx,cht)=> sb.append("ColumnHeadTuple(")
+        case (idx,cht)=>
           sb.append(cht.numericLabel+offset)
           sb.append(",")
           sb.append(cht.stringLabel)
-          sb.append(")\n")
+          sb.append("\n")
 
 
       }

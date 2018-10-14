@@ -1,7 +1,7 @@
 # ikodaSparse
-ikodaSparse maintains sparse data along with its meaningful text values. 
+**ikodaSparse maintains sparse data along with its meaningful text values.**
 
-Libsvm format data (and the analogous LabeledPoint Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. However, ikodaSparse maintains the text values for column heads and text category names for the labels.  
+**`Libsvm` format data (and the analogous `LabeledPoint` Scala class) do not maintain  meaningful text values for columns or rows. They are purely numeric. In contrast, ikodaSparse maintains the text values for features/columns and text category names for the labels/targets.** 
 
 As an example, this allows natural language word frequency data to be processed in libsvm format without losing the meaningful information required when reporting and providing data visualization of the data analysis.
 
@@ -14,8 +14,11 @@ ikodaSparse also converts the data to both `DataFrame` and `RDD[org.apache.spark
 The main function of ikodaSparse is to manipulate large sparse data. 
 
 ### ikodaSparse can:
-1. Remove columns
-1. Reorder columns
+1. Maintain a map of numeric feature identifiers with text names
+1. Maintain a map of numeric labels/targets with text labels
+1. Maintain a UUID for each row
+1. Remove columns/features
+1. Reorder columns/features
 1. Add columns
 1. Remove rows by label/target
 1. Perform mathematical operations, both row wise and column wise
@@ -30,36 +33,7 @@ The main function of ikodaSparse is to manipulate large sparse data.
 1. Load and save data on Hadoop.
 
 
-
-Sparse data is loaded from three files. 
-
-*A libsvm file:*
-
-42.0 12:1.0 78:2.0 258:1.0 275:1.0 302:1.0 348:1.0 362:1.0 492:1.0 494:1.0 642:1.0 1325:1.0 1583:1.0 2376:1.0 2501:1.0<br> 
-42.0 151:1.0 415:1.0 907:1.0 9626:1.0<br>
-4.0 48:1.0 211:1.0 881:1.0 6957:1.0 12667:1.0 15066:1.0
-
-*A columnMap:*
-
-1,v_create<br>
-2,scenario<br>
-3,v_stimulate<br>
-4,v_extract<br>
-
-In this case, the first column/feature, represented by 1 in the libsvm file, is the verb "create"
-
-*A label/target/category map:*
-
-life sciences,42.0<br>
-nursing,4.0<br>
-business,16.0<br>
-
-In this case, the label represented by 42 in the libsvm file is "life sciences" (Perhaps the data here is natural language discussions of professions or college majors)
-
-On Hadoop, the three data sources must have the same file name and must use the following suffixes
-e.g., `mydata`, `mydata-columnMap` and `mydata-targetMap`
-  
-When opened from a local file system, the data must also include Windows friendly suffixes `.libsvm` for the sparseData and `.txt` for the two maps. e.g., `mydata.libsvm`, `mydata-columnMap.txt` and `mydata-targetMap.txt`
+### <a href="https://github.com/amerywu/ikodaSparse/wiki">See Simple Guide to ikodaSparse for details</a>
 
 
 

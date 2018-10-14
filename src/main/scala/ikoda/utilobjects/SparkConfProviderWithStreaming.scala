@@ -17,39 +17,40 @@ object SparkConfProviderWithStreaming extends Serializable {
 trait SparkConfProviderWithStreaming extends Logging with Serializable
 {
 
-  private val keySSC = "SSC"
+   private val keySSC = "SSC"
   private val keyStartedConf = "keyStartedConf"
   private val keySparkSession = "spark"
 
-  lazy val sparkcassandraconnectionhost = ConfigFactory.load("streaming").getString("streaming.cassandraconfig.sparkcassandraconnectionhost")
-  lazy val sparkdrivermaxResultSize = ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdrivermaxResultSize")
-  lazy val sparknetworktimeout = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparknetworktimeout")).getOrElse("350s")
-  lazy val sparkmaster = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkmaster")).getOrElse("127.0.0.1")
-  lazy val datastaxpackageversion = ConfigFactory.load("streaming").getString("streaming.cassandraconfig.datastaxpackageversion")
-  lazy val sparkcoresmax = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkcoresmax")).getOrElse("4g")
-  lazy val sparkdrivermemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdrivermemory")).getOrElse("6g")
-  lazy val sparkexecutormemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkexecutormemory")).getOrElse("6g")
-  lazy val appname = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.appname")).getOrElse("ikoda-"+System.currentTimeMillis())
-  lazy val localo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.local"))
-  lazy val streamingo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.streaming"))
+  protected lazy val sparkcassandraconnectionhost = ConfigFactory.load("streaming").getString("streaming.cassandraconfig.sparkcassandraconnectionhost")
+  protected lazy val sparkdrivermaxResultSize = ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdrivermaxResultSize")
+  protected lazy val sparknetworktimeout = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparknetworktimeout")).getOrElse("350s")
+  protected lazy val sparkmaster = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkmaster")).getOrElse("127.0.0.1")
+  protected lazy val datastaxpackageversion = ConfigFactory.load("streaming").getString("streaming.cassandraconfig.datastaxpackageversion")
+  protected lazy val sparkcoresmax = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkcoresmax")).getOrElse("4g")
+  protected lazy val sparkdrivermemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdrivermemory")).getOrElse("6g")
+  protected  lazy val sparkexecutormemory = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkexecutormemory")).getOrElse("6g")
+  protected lazy val appname = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.appname")).getOrElse("ikoda-"+System.currentTimeMillis())
+  protected lazy val sparkdriverbindAddress = Try(ConfigFactory.load("streaming").getString("streaming.sparkconfig.sparkdriverbindAddress")).getOrElse("127.0.0.1")
+  protected lazy val localo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.local"))
+  protected lazy val streamingo = Try(ConfigFactory.load("streaming").getBoolean("streaming.root.streaming"))
 
 
   @throws(classOf[IKodaMLException])
-  def intitializeSpark(): Unit = {
+  protected def intitializeSpark(): Unit = {
     synchronized {
       getSparkSession()
       getSparkStreamingContext()
     }
   }
 
-  def clearSession: Unit =
+  protected def clearSession: Unit =
   {
     SparkSession.clearActiveSession()
     SparkSession.clearDefaultSession()
   }
 
   @throws(classOf[IKodaMLException])
-  def killSparkStreamingContext {
+  protected def killSparkStreamingContext {
     try {
       if (SparkConfProviderWithStreaming.sparkVariables.get(keySSC).isDefined) {
         SparkConfProviderWithStreaming.sparkVariables -= keySSC
@@ -66,7 +67,7 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
   }
 
   @throws(classOf[IKodaMLException])
-  def getSparkStreamingContext(): StreamingContext = {
+  protected def getSparkStreamingContext(): StreamingContext = {
     try {
       if (!SparkConfProviderWithStreaming.sparkVariables.get(keySSC).isDefined) {
         logger.info("\n\nLoading new streaming\n\n")
@@ -86,7 +87,7 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
     }
   }
 
-  def preExistingSession(): Option[SparkSession] = {
+  protected def preExistingSession(): Option[SparkSession] = {
     SparkConfProviderWithStreaming.sparkVariables.get(keyStartedConf).isDefined match {
       case true =>
         SparkConfProviderWithStreaming.sparkVariables.get(keySparkSession).isDefined match {
@@ -104,7 +105,7 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
     }
   }
 
-  def getSparkSession(): SparkSession = {
+  protected def getSparkSession(): SparkSession = {
         val sso=preExistingSession()
         sso.isDefined match
         {
@@ -115,13 +116,15 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
 
             val sparksession: SparkSession = SparkSession.builder
               .appName(appname)
+               // .enableHiveSupport()
               .master(dirRoot())
-              .config("spark.sql.warehouse.dir", "target/spark-warehouse")
+             // .config("spark.sql.warehouse.dir", "./spark-warehouse")
               .config("spark.streaming.stopGracefullyOnShutdown", "true")
               .config("spark.cassandra.connection.host", sparkcassandraconnectionhost)
               .config("spark.driver.maxResultSize", sparkdrivermaxResultSize)
               .config("spark.network.timeout", sparknetworktimeout)
               .config("spark.driver.memory", sparkdrivermemory)
+              .config("spark.driver.bindaddress", sparkdriverbindAddress)
               .config("spark.executor.memory", sparkexecutormemory)
               .config("spark.jars.packages", "datastax:spark-cassandra-connector:" + datastaxpackageversion)
               .config("spark.cores.max", sparkcoresmax)
@@ -133,7 +136,7 @@ trait SparkConfProviderWithStreaming extends Logging with Serializable
         }
   }
 
-  def spark(): SparkSession = {
+  protected def spark(): SparkSession = {
     getSparkSession
   }
 }
