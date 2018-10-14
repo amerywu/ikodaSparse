@@ -32,6 +32,8 @@ The main function of ikodaSparse is to manipulate large sparse data.
 1. Load and save data on a local file system
 1. Load and save data on Hadoop.
 
+
 ### <a href="https://github.com/amerywu/ikodaSparse/wiki">See Simple Guide to ikodaSparse for details</a>
+
 
 
