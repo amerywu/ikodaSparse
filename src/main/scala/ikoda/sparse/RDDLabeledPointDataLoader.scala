@@ -12,7 +12,17 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 
 import scala.collection.mutable
+import scala.util.Try
 
+/**
+  * @groupname dp Data Attributes
+  * @groupname load Loading and Saving
+  * @groupname cpt Data Computation
+  * @groupname man Data Manipulation
+  *
+  *
+  * @param ilp
+  */
 class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformations(ilp)
 {
 
@@ -73,21 +83,12 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
 
 
   @throws(classOf[Exception])
-  def loadLibSvm1(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
+  private [sparse] def loadLibSvm(fileName: String, inpath: String, validateColumns:Boolean=false): RDDLabeledPoint =
   {
     try
     {
       path=inpath
-      logger.info(s"Loading LibSvm Data. $path${File.separator}${fileName}")
 
-      val df= spark.read.format("libsvm").load(s"$path${File.separator}${fileName}_data_sparse")
-
-      val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
-      {
-
-        //r//ow => LabeledPoint(row.getDouble(0), row(4).asInstanceOf[Vector])
-        r=> (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),0,UUID.randomUUID().toString)
-      }
 
       val name=fileName
 
@@ -97,8 +98,23 @@ class RDDLabeledPointDataLoader(ilp:LpData) extends RDDLabeledPointTransformatio
       logger.debug("\n"+newtargetmap.mkString("\n"))
       logger.info("Loading Column Heads.")
       val newcolheads=loadColumnHeaders(fileName, path)
+
+
+      logger.info(s"Loading LibSvm Data. $path${File.separator}${fileName}")
+
+      val df= spark.read.format("libsvm").option("numFeatures", newcolheads.size).load(s"$path${File.separator}${fileName}_data_sparse")
+      logger.info(DataFrameUtils.showString(df,5))
+
+      val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
+      {
+
+        //r//ow => LabeledPoint(row.getDouble(0), row(4).asInstanceOf[Vector])
+        r=> (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),0,UUID.randomUUID().toString)
+      }
+
+
       val sparseout=new RDDLabeledPoint(newdata,newcolheads,newtargetmap,name)
-logger.info(sparseout.info())
+      logger.info(sparseout.info())
       if(validateColumns) {
         sparseout.validateColumnCount
       }
@@ -115,7 +131,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmFromHelper1(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  private [sparse] def loadLibSvmFromHelper(data:Dataset[(LabeledPoint,Int,String)], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
   {
     try
     {
@@ -142,7 +158,41 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadLibSvmSchemaFromHelper1(columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String): RDDLabeledPoint =
+  private [sparse] def loadLibSvmFromHelper1(data:RDD[LabeledPoint], columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double], datasetName:String, validateCompleteness:Boolean=false): RDDLabeledPoint =
+  {
+    try
+    {
+
+      val name=datasetName
+      logger.info("Loading Target Map.")
+      val newtargets=targets
+
+      val dd:RDD[(LabeledPoint,Int,String)]=data.map{lp =>
+        (lp,
+          s"${lp.label}${lp.features.toSparse.indices}${lp.features.toSparse.values}".hashCode,
+          createUUID().toString)}
+
+      logger.info("Loading Column Heads.")
+      val newcolheads=columns
+      val sparseout=new RDDLabeledPoint(dd,newcolheads,newtargets,name)
+      logger.info(sparseout.info)
+      if(validateCompleteness) {
+        sparseout.validateColumnCount
+      }
+      sparseout
+    }
+    catch
+      {
+        case e: Exception =>
+          logger.error(s"${ilp.name}")
+          throw new Exception(s"${ilp.name} : ${e.getMessage}",e)
+      }
+  }
+
+
+
+  @throws(classOf[Exception])
+  private [sparse] def loadLibSvmSchemaFromHelper1(columns:mutable.ListMap[Int,ColumnHeadTuple], targets:Map[String,Double],datasetName:String): RDDLabeledPoint =
   {
     try
     {
@@ -176,7 +226,6 @@ logger.info(sparseout.info())
     {
       case e: Exception =>
       {
-
         logger.error(s"${ilp.name}")
         logger.error(s"Could not load columnHeadMap: ${e.getMessage}", e)
         throw new Exception(s"${ilp.name} : ${e.getMessage}", e)
@@ -186,7 +235,7 @@ logger.info(sparseout.info())
 
 
 
-  def truncateFilename(fn:String):String=
+  private [sparse] def truncateFilename(fn:String):String=
   {
     if (fn.toUpperCase.endsWith(".TXT"))
     {
@@ -196,18 +245,16 @@ logger.info(sparseout.info())
     else if (fn.toUpperCase.endsWith(".LIBSVM"))
     {
       fn.substring(0, fn.length - 7)
-
     }
     else
     {
       fn
     }
-
   }
 
 
   @throws(classOf[Exception])
-  def loadLibSvmPJ1(inpth: String, partitions:Int=defaultPartitionSize, validateColumns:Boolean=true): RDDLabeledPoint =
+  private [sparse] def loadLibSvmLocal(inpth: String, validateColumns:Boolean=true): RDDLabeledPoint =
   {
     try
     {
@@ -218,16 +265,19 @@ logger.info(sparseout.info())
       }
 
       logger.debug(s"path $path")
-
-      val df=spark.read.format("libsvm").load( path)
+      val newtargetmap=loadTargetMap( path, true)
+      val newcolmap=loadColumnHeaders( path,true)
+      val df=spark.read.format("libsvm").option("numFeatures", newcolmap.size).load( path)
+      logger.info("Loaded")
       logger.debug(DataFrameUtils.showString(df,10))
         val newdata:RDD[(LabeledPoint,Int,String)] = df.rdd.map
         {
-          r => (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),r.hashCode(),UUID.randomUUID().toString)
+          r =>
+            (LabeledPoint(r.getDouble(0), r(1).asInstanceOf[org.apache.spark.ml.linalg.Vector]),r.hashCode(),UUID.randomUUID().toString)
+
         }
 
-      val newtargetmap=loadTargetMap( path, true)
-      val newcolmap=loadColumnHeaders( path,true)
+
 
       val sparseout=new RDDLabeledPoint(newdata,newcolmap,newtargetmap,path)
       logger.info(sparseout.info)
@@ -250,7 +300,7 @@ logger.info(sparseout.info())
   }
 
   @throws(classOf[Exception])
-  def loadSchemaPJ1( inpth: String): RDDLabeledPoint =
+  private [sparse] def loadSchemaLocal(inpth: String): RDDLabeledPoint =
   {
     try
     {
@@ -281,7 +331,7 @@ logger.info(sparseout.info())
 
 
   @throws(classOf[Exception])
-  def loadSchema1( fileName: String, path: String): RDDLabeledPoint =
+  private [sparse] def loadSchema1( fileName: String, path: String): RDDLabeledPoint =
   {
     try
     {
