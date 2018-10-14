@@ -11,7 +11,7 @@ GOTO :end
 
 echo copying docs
 
-xcopy C:\Users\jake\__workspace\scalaProjects\ikodaSparse\target\site\scaladocs C:\Users\jake\__workspace\scalaProjects\ikodaSparse\docs /S /E /F /R /Y /I
+xcopy C:\Users\jake\__workspace\scalaProjects\ikodaSparse\target\site\scaladocs C:\Users\jake\__workspace\scalaProjects\ikodaSparse\docs\scaladoc /S /E /F /R /Y /I
 
 
 :end
