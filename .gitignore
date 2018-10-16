@@ -5,3 +5,4 @@ logs/
 surefire-reports/
 spark-warehouse/
 ikodaSparse.iml/
+test.log

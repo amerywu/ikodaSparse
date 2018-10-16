@@ -272,7 +272,6 @@
                                 <include>org.apache.spark:spark:spark-graphx_2.11:2.3.2</include>
                             </includes>
                             </bannedDependencies>
-
                         </rules>
                     </configuration>
                 </execution>
